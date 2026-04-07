@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "home": "Trang Chủ",
+    "about": "Về Tôi",
+    "projects": "Dự Án",
+    "contact": "Liên Hệ"
+  },
+  "home": {
+    "greeting": "Xin chào, tôi là",
+    "subtitle": "Lập Trình Viên Web Full-Stack",
+    "cta_projects": "Xem Dự Án",
+    "cta_contact": "Liên Hệ Ngay",
+    "scroll": "Cuộn xuống"
+  },
+  "about": {
+    "title": "Về Tôi",
+    "skills_title": "Kỹ Năng",
+    "experience_title": "Kinh Nghiệm",
+    "education_title": "Học Vấn",
+    "education_school": "Học Viện Công Nghệ Bưu Chính Viễn Thông",
+    "education_degree": "Kỹ Sư Công Nghệ",
+    "education_period": "2019 – 2024",
+    "birthday": "Ngày sinh",
+    "location": "Địa chỉ",
+    "email": "Email",
+    "phone": "Điện thoại"
+  },
+  "projects": {
+    "title": "Dự Án",
+    "subtitle": "Những gì tôi đã xây dựng",
+    "view_all": "Xem Tất Cả",
+    "view_live": "Xem",
+    "view_code": "Mã Nguồn",
+    "view_details": "Xem Chi Tiết",
+    "responsibilities": "Trách Nhiệm",
+    "tech_stack": "Công Nghệ",
+    "back": "Quay Lại Dự Án"
+  },
+  "contact": {
+    "title": "Liên Hệ",
+    "subtitle": "Bạn có dự án? Hãy cùng trò chuyện.",
+    "name": "Tên của bạn",
+    "email": "Email của bạn",
+    "subject": "Tiêu đề",
+    "message": "Nội dung",
+    "send": "Gửi Tin Nhắn",
+    "sending": "Đang gửi...",
+    "success": "Đã gửi! Tôi sẽ phản hồi sớm.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại."
+  },
+  "footer": {
+    "built": "Xây dựng với React + Firebase",
+    "rights": "Tất cả quyền được bảo lưu"
+  },
+  "theme": {
+    "dark": "Chế độ tối",
+    "light": "Chế độ sáng"
+  },
+  "loading": "Đang tải...",
+  "error": "Không tải được dữ liệu."
+}

@@ -1,0 +1,61 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "projects": "Projects",
+    "contact": "Contact"
+  },
+  "home": {
+    "greeting": "Hello, I'm",
+    "subtitle": "Full-Stack Web Developer",
+    "cta_projects": "View Projects",
+    "cta_contact": "Get in Touch",
+    "scroll": "Scroll down"
+  },
+  "about": {
+    "title": "About Me",
+    "skills_title": "Tech Stack",
+    "experience_title": "Experience",
+    "education_title": "Education",
+    "education_school": "Post & Telecommunications Institute of Technology",
+    "education_degree": "Bachelor of Engineering",
+    "education_period": "2019 – 2024",
+    "birthday": "Birthday",
+    "location": "Location",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Things I've built",
+    "view_all": "View All Projects",
+    "view_live": "Live",
+    "view_code": "Source Code",
+    "view_details": "View Details",
+    "responsibilities": "Responsibilities",
+    "tech_stack": "Tech Stack",
+    "back": "Back to Projects"
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "Have a project in mind? Let's talk.",
+    "name": "Your Name",
+    "email": "Your Email",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent! I'll get back to you soon.",
+    "error": "Something went wrong. Please try again."
+  },
+  "footer": {
+    "built": "Built with React + Firebase",
+    "rights": "All rights reserved"
+  },
+  "theme": {
+    "dark": "Dark mode",
+    "light": "Light mode"
+  },
+  "loading": "Loading...",
+  "error": "Failed to load data."
+}
