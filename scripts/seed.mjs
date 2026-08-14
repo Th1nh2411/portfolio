@@ -49,14 +49,14 @@ const projects = [
             "Built complex UI/UX components based on Figma designs.",
             "Implemented automated payment processes.",
             "Integrated third-party APIs for payment functionalities, including automatic monthly deductions and virtual account payments.",
-            "Managed backend tasks, including CRUD operations, contract lifecycle management, payment storage system."
+            "Managed backend tasks, including CRUD operations, contract lifecycle management, payment storage system.",
         ],
         detailDescriptionsVi: [
             "Hệ thống xử lý toàn bộ vòng đời thuê xe, từ tạo hợp đồng, quản lý khách hàng đến lập hóa đơn hàng tháng, xử lý thanh toán tự động và theo dõi đối soát. Sử dụng CMS cho thanh toán tự động hàng tháng và thanh toán qua tài khoản ảo.",
             "Xây dựng các thành phần UI/UX phức tạp dựa trên thiết kế từ Figma.",
             "Triển khai các quy trình thanh toán tự động.",
             "Tích hợp API bên thứ ba cho các chức năng thanh toán, bao gồm khấu trừ tự động hàng tháng và thanh toán qua tài khoản ảo.",
-            "Quản lý các tác vụ backend, bao gồm CRUD, quản lý vòng đời hợp đồng, và hệ thống lưu trữ thanh toán."
+            "Quản lý các tác vụ backend, bao gồm CRUD, quản lý vòng đời hợp đồng, và hệ thống lưu trữ thanh toán.",
         ],
         images: [
             "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775530990/rent_1_sullce.png",
@@ -75,12 +75,12 @@ const projects = [
         detailDescriptions: [
             "A certified used car platform operated by Kolon Mobility Group, offering high-quality inspected vehicles. The website enables users to browse listings, view detailed vehicle information, and request consultations through a modern, user-friendly interface.",
             "Contributed to building core UI/UX components based on Figma designs.",
-            "Implemented buy and rent workflows, integrating them with service modules such as the rental system."
+            "Implemented buy and rent workflows, integrating them with service modules such as the rental system.",
         ],
         detailDescriptionsVi: [
             "Nền tảng xe đã qua sử dụng được chứng nhận do Kolon Mobility Group vận hành, cung cấp các phương tiện chất lượng cao đã được kiểm định. Website cho phép người dùng duyệt danh sách xe, xem thông tin chi tiết và gửi yêu cầu tư vấn thông qua giao diện hiện đại, thân thiện.",
             "Tham gia xây dựng UI/UX cốt lõi dựa trên thiết kế Figma.",
-            "Triển khai các luồng mua/thuê xe và tích hợp với các module dịch vụ như hệ thống thuê xe."
+            "Triển khai các luồng mua/thuê xe và tích hợp với các module dịch vụ như hệ thống thuê xe.",
         ],
         images: [
             "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775529895/702-1_z9plg6.png",
@@ -96,15 +96,15 @@ const projects = [
     },
     {
         id: "booking-tour",
-        title: "Booking Tour Website",
+        title: "Holidate - Tour Booking Website",
         description: "Full-featured tour booking platform.",
         detailDescriptions: [
             "When logging in as a user, you can view tour details, book tours, make payments, update your profile, change your password, view booking history, and chat.",
-            "When logging in as an admin, you can manage tour information, guide information, bookings, user feedback, and support clients through the chat box."
+            "When logging in as an admin, you can manage tour information, guide information, bookings, user feedback, and support clients through the chat box.",
         ],
         detailDescriptionsVi: [
             "Khi đăng nhập với tài khoản người dùng, bạn có thể xem chi tiết tour, đặt tour, thanh toán, cập nhật hồ sơ, đổi mật khẩu, xem lịch sử đặt tour và chat.",
-            "Khi đăng nhập với tài khoản admin, bạn có thể quản lý thông tin tour, thông tin hướng dẫn viên, đơn đặt tour, phản hồi của người dùng và hỗ trợ khách hàng qua chat."
+            "Khi đăng nhập với tài khoản admin, bạn có thể quản lý thông tin tour, thông tin hướng dẫn viên, đơn đặt tour, phản hồi của người dùng và hỗ trợ khách hàng qua chat.",
         ],
         images: [
             "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775528439/holidate_preview_1.png",
@@ -114,7 +114,7 @@ const projects = [
             "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775528439/holidate_preview_4.png",
             "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775528439/holidate_preview_5.png",
             "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775528439/holidate_preview_6.png",
-            "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775528439/holidate_preview_7.png"
+            "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775528439/holidate_preview_7.png",
         ],
         techStack: ["ReactJS", "ExpressJS", "MongoDB"],
         liveUrl: "https://holidate.vercel.app",
@@ -143,12 +143,12 @@ const experience = [
         descriptions: [
             "Lead a group of developers working on multiple projects (from 10/2025).",
             "Checked technical needs, set up sprint tasks, and kept track of project progress.",
-            "Worked on both UI and server-side features, connecting systems with outside services."
+            "Worked on both UI and server-side features, connecting systems with outside services.",
         ],
         descriptionsVi: [
             "Dẫn dắt một nhóm developer làm việc trên nhiều dự án (từ 10/2025).",
             "Phân tích yêu cầu kỹ thuật, thiết lập sprint tasks và theo dõi tiến độ dự án.",
-            "Phát triển cả phía giao diện (UI) và backend, tích hợp hệ thống với các dịch vụ bên ngoài."
+            "Phát triển cả phía giao diện (UI) và backend, tích hợp hệ thống với các dịch vụ bên ngoài.",
         ],
     },
     {
@@ -160,11 +160,11 @@ const experience = [
         type: "intern",
         descriptions: [
             "Learned advanced ReactJS techniques including using and customizing component libraries.",
-            "Participated in small projects by building reusable components and integrating backend APIs."
+            "Participated in small projects by building reusable components and integrating backend APIs.",
         ],
         descriptionsVi: [
             "Học các kỹ thuật nâng cao trong ReactJS, bao gồm việc sử dụng và tùy chỉnh các thư viện component.",
-            "Tham gia các dự án nhỏ bằng cách xây dựng các component tái sử dụng và tích hợp API backend."
+            "Tham gia các dự án nhỏ bằng cách xây dựng các component tái sử dụng và tích hợp API backend.",
         ],
     },
 ];
