@@ -89,7 +89,7 @@ const projects = [
             "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775529895/702-4_e2w8bk.png",
             "https://res.cloudinary.com/dgsumh8ih/image/upload/v1775529894/702-5_chdkut.png",
         ],
-        techStack: ["ReactJS", "NestJS", "MySQL"],
+        techStack: ["NextJs", "NestJS", "MySQL"],
         liveUrl: "https://702prime.com",
         period: "12/2023 – Present",
         featured: true,
