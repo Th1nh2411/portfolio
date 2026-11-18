@@ -845,14 +845,14 @@ g.is-on .circuit-via {
   pointer-events: none;
   /* Power off = night: content goes greyscale and dim behind a deep navy tint, the
      same in both themes (a translucent navy over cream read as muddy purple-grey). */
-  background: rgb(22 21 42 / 0.38);
-  -webkit-backdrop-filter: grayscale(0.85) brightness(0.88);
-  backdrop-filter: grayscale(0.85) brightness(0.88);
+  background: rgb(22 21 42 / 0.24);
+  -webkit-backdrop-filter: grayscale(0.6) brightness(0.94);
+  backdrop-filter: grayscale(0.6) brightness(0.94);
   opacity: 0;
   transition: opacity 0.7s ease;
 }
 .dark [data-circuit]::after {
-  background: rgb(10 9 22 / 0.45);
+  background: rgb(10 9 22 / 0.3);
 }
 /* The hero is the top of the page: nothing above it to fade into */
 [data-circuit][data-source]::after {
