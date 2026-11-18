@@ -57,5 +57,10 @@
     "light": "Chế độ sáng"
   },
   "loading": "Đang tải...",
-  "error": "Không tải được dữ liệu."
+  "error": "Không tải được dữ liệu.",
+  "actions": {
+    "copy": "Sao chép",
+    "copied": "ĐÃ CHÉP!",
+    "download_cv": "Tải CV"
+  }
 }

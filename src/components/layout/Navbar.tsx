@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import Sprite from '../../game/Sprite'
+import { MOON, SUN } from '../../game/sprites'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../../hooks'
 
@@ -69,10 +71,9 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-md border-b border-ink-100 dark:border-ink-800'
-          : ''
+      // Always solid: toggling the background at the top of the page read as a flicker.
+      className={`fixed top-0 left-0 right-0 z-50 bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-md border-b transition-colors duration-300 ${
+        scrolled ? 'border-ink-200 dark:border-ink-800' : 'border-transparent'
       }`}
     >
       <nav className="container-narrow flex items-center justify-between h-16">
@@ -80,7 +81,7 @@ export default function Navbar() {
         <Link
           to="/"
           onClick={(e) => handleLinkClick(e, 'home')}
-          className="font-display font-semibold text-lg tracking-tight hover:text-accent transition-colors"
+          className="font-pixel text-2xl leading-none hover:text-accent transition-colors"
         >
           <span className="text-accent">T</span>hinh.
         </Link>
@@ -92,7 +93,7 @@ export default function Navbar() {
               <Link
                 to={link.to}
                 onClick={(e) => handleLinkClick(e, link.id)}
-                className={`text-md font-body font-medium transition-colors hover:text-accent ${
+                className={`font-pixel-mono text-xl leading-none uppercase tracking-wide transition-colors hover:text-accent ${
                   isActive(link)
                     ? 'text-accent'
                     : 'text-ink-600 dark:text-ink-400'
@@ -108,26 +109,16 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <button
             onClick={toggleLang}
-            className="text-xs font-mono font-medium px-3 py-1.5 rounded-full border border-ink-200 dark:border-ink-700 text-ink-600 dark:text-ink-400 hover:border-accent hover:text-accent transition-colors"
+            className="icon-btn"
           >
             {i18n.language === 'en' ? 'VI' : 'EN'}
           </button>
           <button
             onClick={toggle}
             aria-label={t(`theme.${isDark ? 'light' : 'dark'}`)}
-            className="w-9 h-9 flex items-center justify-center rounded-full border border-ink-200 dark:border-ink-700 text-ink-600 dark:text-ink-400 hover:border-accent hover:text-accent transition-colors"
+            className="icon-btn !px-0 w-9"
           >
-            {isDark ? (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            )}
+            <Sprite sprite={isDark ? SUN : MOON} scale={2} />
           </button>
 
           {/* Mobile burger */}
@@ -160,7 +151,7 @@ export default function Navbar() {
                   <Link
                     to={link.to}
                     onClick={(e) => handleLinkClick(e, link.id)}
-                    className={`block text-base font-body font-medium transition-colors hover:text-accent ${
+                    className={`block font-pixel-mono text-2xl uppercase transition-colors hover:text-accent ${
                       isActive(link) ? 'text-accent' : 'text-ink-700 dark:text-ink-300'
                     }`}
                   >

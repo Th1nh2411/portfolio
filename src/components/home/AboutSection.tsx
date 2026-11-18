@@ -1,46 +1,48 @@
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { useFetch } from "../../hooks";
-import { getProfile, getSkills, getExperience } from "../../lib/firestore";
+import { getProfile, getExperience } from "../../lib/firestore";
 import FadeIn from "../common/FadeIn";
 import { ProfileSkeleton, Skeleton } from "../common/Skeleton";
+import { unlock } from "../../game/store";
+import CopyButton from "../common/CopyButton";
+import Board from "../common/Board";
+import Sprite from "../../game/Sprite";
+import { COIN } from "../../game/art";
+import PcbBackdrop from "../pixel/PcbBackdrop";
+import { useCvUrl } from "../../lib/cv";
 
 export default function AboutSection() {
     const { t, i18n } = useTranslation();
     const lang = i18n.language;
 
     const { data: profile, loading: loadingProfile } = useFetch(getProfile);
-    const { data: skills, loading: loadingSkills } = useFetch(getSkills);
     const { data: experience, loading: loadingExp } = useFetch(getExperience);
+    const cvUrl = useCvUrl(profile?.cvUrl);
 
-    const expTypeColor = {
-        fulltime:
-            "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-        intern: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-        freelance:
-            "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-    };
 
     return (
-        <section id="about" className="py-24 border-t border-ink-100 dark:border-ink-800 snap-start">
+        <section id="about" data-circuit className="py-24 section-edge pcb-host isolate overflow-x-clip">
+            <PcbBackdrop seed="about" label="U1·ABOUT" />
             <div className="container-narrow">
+                <div>
                 {/* Header */}
                 <FadeIn>
-                    <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">
-                        Who I Am
+                    <p data-lamp className="font-pixel-mono text-xl text-accent tracking-widest uppercase mb-2">
+                        &gt; Who I Am
                     </p>
-                    <h2 className="section-title mb-16">{t("about.title")}</h2>
+                    <h2 className="section-title mb-8">{t("about.title")}</h2>
                 </FadeIn>
 
                 {/* Profile info grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 mb-24">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 mb-16">
                     {/* Bio */}
                     <FadeIn className="lg:col-span-3">
                         {loadingProfile ? (
                             <ProfileSkeleton />
                         ) : (
                             <>
-                                <p className="text-lg text-ink-700 dark:text-ink-300 leading-relaxed mb-8">
+                                <p className="text-lg text-ink-700 dark:text-ink-300 leading-relaxed mb-6">
                                     {lang === "vi" && profile?.bioVi
                                         ? profile.bioVi
                                         : profile?.bio}
@@ -50,8 +52,10 @@ export default function AboutSection() {
                                         {
                                             label: t("about.birthday"),
                                             value: profile?.birthday,
+                                            copy: false,
                                         },
                                         {
+                                            copy: true,
                                             label: t("about.location"),
                                             value:
                                                 lang === "vi" &&
@@ -62,41 +66,51 @@ export default function AboutSection() {
                                         {
                                             label: t("about.email"),
                                             value: profile?.email,
+                                            copy: true,
                                         },
                                         {
                                             label: t("about.phone"),
                                             value: profile?.phone,
+                                            copy: true,
                                         },
                                     ].map((item) => (
                                         <div
                                             key={item.label}
-                                            className="flex gap-3"
+                                            className="flex items-center gap-3"
                                         >
-                                            <span className="text-xs font-mono text-accent uppercase tracking-wide pt-0.5 whitespace-nowrap">
+                                            <span className="font-pixel-mono text-lg leading-none text-accent uppercase tracking-wide pt-0.5 whitespace-nowrap">
                                                 {item.label}
                                             </span>
                                             <span className="text-sm text-ink-700 dark:text-ink-300 break-all">
                                                 {item.value}
                                             </span>
+                                            {item.copy && item.value && (
+                                                <CopyButton value={item.value} label={item.label} />
+                                            )}
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="flex gap-4 mt-8">
+                                <div className="flex gap-4 mt-6">
                                     <a
                                         href={profile?.github}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="btn-outline text-sm py-2.5 px-5"
+                                        className="btn-outline"
                                     >
-                                        GitHub ↗
+                                        ▶ GitHub
                                     </a>
-                                    <a
-                                        href={`mailto:${profile?.email}`}
-                                        className="btn-primary text-sm py-2.5 px-5"
-                                    >
-                                        Email Me
-                                    </a>
+                                    {cvUrl && (
+                                        <a
+                                            href={cvUrl}
+                                            download
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="btn-primary"
+                                        >
+                                            ⬇ {t("actions.download_cv")}
+                                        </a>
+                                    )}
                                 </div>
                             </>
                         )}
@@ -104,14 +118,15 @@ export default function AboutSection() {
 
                     {/* Education card */}
                     <FadeIn delay={0.15} className="lg:col-span-2">
-                        <div className="card p-7 h-fit">
-                            <p className="font-mono text-xs text-accent tracking-widest uppercase mb-5">
-                                {t("about.education_title")}
+                        <Board tone="sea" silk="EDU-01" className="h-fit">
+                            <p className="frame-title">
+                                🎓 {t("about.education_title")}
+                                <span className="frame-dots" aria-hidden><i /><i /><i /></span>
                             </p>
-                            <div className="flex gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                            <div className="flex gap-4 p-6">
+                                <div className="w-10 h-10 bg-sea/20 border-2 border-sea flex items-center justify-center flex-shrink-0">
                                     <svg
-                                        className="w-5 h-5 text-accent"
+                                        className="w-5 h-5 text-sea-dark dark:text-sea"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
@@ -125,76 +140,31 @@ export default function AboutSection() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 className="font-display font-semibold text-ink-900 dark:text-ink-100 text-base leading-tight">
+                                    <h3 className="font-pixel text-ink-900 dark:text-ink-100 text-base leading-tight">
                                         {t("about.education_school")}
                                     </h3>
                                     <p className="text-sm text-ink-500 dark:text-ink-400 mt-1">
                                         {t("about.education_degree")}
                                     </p>
-                                    <p className="text-xs font-mono text-accent mt-2">
+                                    <p className="font-pixel-mono text-lg leading-none text-accent mt-2">
                                         {t("about.education_period")}
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </Board>
                     </FadeIn>
                 </div>
 
-                {/* Skills */}
-                <FadeIn>
-                    <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">
-                        {t("about.skills_title")}
-                    </p>
-                    <h3 className="text-3xl font-display font-semibold text-ink-900 dark:text-ink-100 mb-10">
-                        Technologies I work with
-                    </h3>
-                </FadeIn>
+                </div>
 
-                {loadingSkills ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-24">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <Skeleton key={i} className="h-40" />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-24">
-                        {skills?.map((skill, i) => (
-                            <motion.div
-                                key={skill.category}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.07, duration: 0.5 }}
-                                className="card p-5"
-                            >
-                                <p className="text-xs font-mono text-accent uppercase tracking-wide mb-4">
-                                    {lang === "vi" && skill.categoryVi
-                                        ? skill.categoryVi
-                                        : skill.category}
-                                </p>
-                                <ul className="space-y-2">
-                                    {skill.items.map((item) => (
-                                        <li
-                                            key={item}
-                                            className="text-sm text-ink-700 dark:text-ink-300 flex items-center gap-2"
-                                        >
-                                            <span className="w-1 h-1 rounded-full bg-accent flex-shrink-0" />
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </motion.div>
-                        ))}
-                    </div>
-                )}
-
-                {/* Experience */}
+                <div>
+                {/* Experience: a level map, oldest stage = 1-1 */}
                 <FadeIn>
-                    <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">
-                        {t("about.experience_title")}
+                    <p className="font-pixel-mono text-xl text-accent tracking-widest uppercase mb-2">
+                        &gt; {t("about.experience_title")}
                     </p>
-                    <h3 className="text-3xl font-display font-semibold text-ink-900 dark:text-ink-100 mb-10">
-                        Where I've Worked
+                    <h3 className="font-pixel text-4xl md:text-5xl leading-none text-ink-950 dark:text-ink-50 mb-8">
+                        World Map
                     </h3>
                 </FadeIn>
 
@@ -205,67 +175,77 @@ export default function AboutSection() {
                         ))}
                     </div>
                 ) : (
-                    <div className="relative">
-                        {/* Timeline line */}
-                        <div className="absolute left-4 top-2 bottom-2 w-px bg-ink-100 dark:bg-ink-800 hidden md:block" />
-
-                        <div className="space-y-6">
-                            {experience?.map((exp, i) => (
-                                <motion.div
+                    <ol className="relative">
+                        {experience?.map((exp, i) => {
+                            const stage = (experience?.length ?? 0) - i;
+                            const current = /present|nay|hiện/i.test(exp.period);
+                            const last = i === (experience?.length ?? 0) - 1;
+                            const [from, to] = exp.period.split(/\s*[–-]\s*/);
+                            return (
+                                <motion.li
                                     key={exp.id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{
-                                        delay: i * 0.1,
-                                        duration: 0.5,
-                                    }}
-                                    className="md:pl-14 relative"
+                                    initial={{ opacity: 0, y: 16 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, amount: 0.15 }}
+                                    onViewportEnter={last ? () => unlock("world_map") : undefined}
+                                    transition={{ delay: i * 0.08, duration: 0.4 }}
+                                    className={`relative grid grid-cols-1 md:grid-cols-[140px_1fr] gap-x-8 pb-6 last:pb-0 ${current ? "" : "exp-done"}`}
                                 >
-                                    {/* Timeline dot */}
-                                    <div className="hidden md:flex absolute left-0 top-5 w-9 h-9 rounded-full bg-surface-light dark:bg-surface-dark border-2 border-accent items-center justify-center">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-accent" />
+                                    {/* Timeline: a copper trace in the gutter, one via per stage */}
+                                    {!last && <span aria-hidden className="tl-trace hidden md:block" />}
+                                    <span aria-hidden className={`tl-via hidden md:block ${current ? "is-current" : ""}`} />
+                                    {/* When: big period + stage silkscreen (desktop) */}
+                                    <div className="hidden md:block text-right pt-5">
+                                        <p className="font-pixel-mono text-2xl leading-none text-ink-900 dark:text-ink-100">{from}</p>
+                                        <p className={`font-pixel-mono text-lg leading-none mt-1 ${current ? "text-accent" : "text-ink-400 dark:text-ink-500"}`}>
+                                            {to}
+                                        </p>
+                                        <p className="font-pixel-mono text-sm leading-none text-ink-400 dark:text-ink-500 tracking-widest mt-3">
+                                            WORLD 1-{stage}
+                                        </p>
                                     </div>
 
-                                    <div className="card p-7">
-                                        <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
-                                            <div>
-                                                <h4 className="font-display text-xl font-semibold text-ink-900 dark:text-ink-100">
-                                                    {lang === "vi" && exp.roleVi
-                                                        ? exp.roleVi
-                                                        : exp.role}
-                                                </h4>
-                                                <p className="text-ink-500 dark:text-ink-400 mt-0.5">
-                                                    {exp.company}
+                                    {/* Card */}
+                                    <Board tone={current ? "peach" : "sea"} silk={`EXP-${String(stage).padStart(2, "0")}`} className="exp-card px-6 py-5">
+                                        <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
+                                            <div className="flex-1 min-w-[12rem]">
+                                                <p className="md:hidden font-pixel-mono text-base leading-none text-ink-400 dark:text-ink-500 mb-2">
+                                                    {exp.period} · WORLD 1-{stage}
                                                 </p>
+                                                <h4 className="font-pixel text-2xl leading-tight text-ink-950 dark:text-ink-50">
+                                                    {lang === "vi" && exp.roleVi ? exp.roleVi : exp.role}
+                                                </h4>
+                                                <p className="text-ink-500 dark:text-ink-400 mt-1">{exp.company}</p>
                                             </div>
-                                            <div className="flex items-center gap-3">
-                                                <span
-                                                    className={`text-xs font-mono font-semibold px-2.5 py-1 rounded-full ${
-                                                        expTypeColor[exp.type as keyof typeof expTypeColor]
-                                                    }`}
-                                                >
-                                                    {exp.type}
+                                            <div className="flex items-center gap-1.5">
+                                                <span className={`exp-chip ${current ? "is-current" : ""}`}>
+                                                    {current ? "▶ NOW PLAYING" : "✓ CLEARED"}
                                                 </span>
-                                                <span className="text-xs font-mono text-ink-400 dark:text-ink-500">
-                                                    {exp.period}
-                                                </span>
+                                                <span className="exp-chip">{exp.type.toUpperCase()}</span>
                                             </div>
                                         </div>
-                                        <ul className="space-y-2 mt-4 mt-2">
+                                        <ul className="mt-4 space-y-2">
                                             {(lang === "vi" && exp.descriptionsVi ? exp.descriptionsVi : exp.descriptions).map((desc, idx) => (
-                                                <li key={idx} className="text-sm text-ink-600 dark:text-ink-400 flex items-start gap-2">
-                                                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent/60 flex-shrink-0" />
+                                                <li key={idx} className="group/coin text-sm leading-relaxed text-ink-600 dark:text-ink-400 flex items-start gap-2.5">
+                                                    <span className="coin-bullet shrink-0 flex items-center h-[1.625em]">
+                                                        <Sprite
+                                                            sprite={COIN}
+                                                            scale={2}
+                                                            animate="0.6s"
+                                                            fallback={<span className="block mt-[5px] w-1.5 h-1.5 bg-accent" />}
+                                                        />
+                                                    </span>
                                                     <span>{desc}</span>
                                                 </li>
                                             ))}
                                         </ul>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
+                                    </Board>
+                                </motion.li>
+                            );
+                        })}
+                    </ol>
                 )}
+                </div>
             </div>
         </section>
     );

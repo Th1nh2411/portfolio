@@ -57,5 +57,10 @@
     "light": "Light mode"
   },
   "loading": "Loading...",
-  "error": "Failed to load data."
+  "error": "Failed to load data.",
+  "actions": {
+    "copy": "Copy",
+    "copied": "COPIED!",
+    "download_cv": "Download CV"
+  }
 }

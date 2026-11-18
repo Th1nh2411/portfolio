@@ -9,8 +9,8 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 function NotFound() {
   return (
     <div className="container-narrow py-32 text-center">
-      <p className="font-display text-8xl font-semibold text-ink-100 dark:text-ink-900 select-none">404</p>
-      <p className="text-xl font-display text-ink-600 dark:text-ink-400 -mt-8 mb-6">Page not found</p>
+      <p className="font-pixel text-8xl text-ink-100 dark:text-ink-900 select-none">404</p>
+      <p className="text-2xl font-pixel text-ink-600 dark:text-ink-400 -mt-8 mb-6">Page not found</p>
       <a href="/" className="btn-primary">Go Home</a>
     </div>
   )

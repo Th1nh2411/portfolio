@@ -3,6 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { submitContact } from '../../lib/firestore'
 import FadeIn from '../common/FadeIn'
+import CopyButton from '../common/CopyButton'
+import PcbBackdrop from '../pixel/PcbBackdrop'
+import { emit, unlock } from '../../game/store'
+import { play } from '../../game/sound'
 
 interface FormState {
   name: string
@@ -28,12 +32,15 @@ export default function ContactSection() {
       await submitContact(form)
       setStatus('success')
       setForm({ name: '', email: '', subject: '', message: '' })
+      emit('px:quest')
+      window.setTimeout(() => unlock('messenger'), 1800)
     } catch {
       setStatus('error')
+      play('error')
     }
   }
 
-  const inputClass = `w-full px-4 py-3 rounded-xl bg-ink-50 dark:bg-ink-900 border border-ink-200 dark:border-ink-700 text-ink-900 dark:text-ink-100 placeholder-ink-400 dark:placeholder-ink-600 text-sm focus:outline-none focus:border-accent dark:focus:border-accent transition-colors`
+  const inputClass = 'field'
 
   const contactLinks = [
     {
@@ -41,33 +48,38 @@ export default function ContactSection() {
       label: 'Email',
       value: 'ducthnh2411@gmail.com',
       href: 'mailto:ducthnh2411@gmail.com',
+      copy: 'ducthnh2411@gmail.com',
     },
     {
       icon: '📞',
       label: 'Phone',
       value: '0935 098 021',
       href: 'tel:0935098021',
+      copy: '0935098021',
     },
     {
       icon: '⌘',
       label: 'GitHub',
       value: 'Th1nh2411',
       href: 'https://github.com/Th1nh2411',
+      copy: 'https://github.com/Th1nh2411',
     },
     {
       icon: '📍',
       label: 'Location',
       value: 'District 7, Ho Chi Minh City',
       href: null,
+      copy: 'District 7, Ho Chi Minh City',
     },
   ]
 
   return (
-    <section id="contact" className="py-24 border-t border-ink-100 dark:border-ink-800 snap-start">
+    <section id="contact" data-circuit className="py-24 section-edge section-band pcb-host isolate">
+      <PcbBackdrop seed="contact" label="J1·CONTACT" />
       <div className="container-narrow">
         <FadeIn>
-          <p className="font-mono text-xs text-accent tracking-widest uppercase mb-3">Say Hello</p>
-          <h2 className="section-title mb-3">{t('contact.title')}</h2>
+          <p data-lamp className="font-pixel-mono text-xl text-accent tracking-widest uppercase mb-2">&gt; NEW QUEST: SAY HELLO</p>
+          <h2 className="font-pixel text-5xl md:text-6xl leading-none text-ink-950 dark:text-ink-50 mb-4">{t('contact.title')}</h2>
           <p className="section-subtitle mb-16 max-w-lg">{t('contact.subtitle')}</p>
         </FadeIn>
 
@@ -84,11 +96,11 @@ export default function ContactSection() {
                   transition={{ delay: i * 0.08 }}
                   className="flex items-center gap-4"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-ink-100 dark:bg-ink-800 flex items-center justify-center text-lg flex-shrink-0">
+                  <div className="w-10 h-10 border border-ink-300 dark:border-ink-700 bg-paper-light dark:bg-ink-900 flex items-center justify-center text-lg flex-shrink-0">
                     {link.icon}
                   </div>
-                  <div>
-                    <p className="text-xs font-mono text-ink-400 dark:text-ink-500 uppercase tracking-wide">{link.label}</p>
+                  <div className="min-w-0">
+                    <p className="font-pixel-mono text-lg leading-none text-ink-500 dark:text-ink-400 uppercase tracking-wide">{link.label}</p>
                     {link.href ? (
                       <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined}
                         rel="noopener noreferrer"
@@ -99,16 +111,17 @@ export default function ContactSection() {
                       <p className="text-sm text-ink-700 dark:text-ink-300">{link.value}</p>
                     )}
                   </div>
+                  <CopyButton value={link.copy} label={link.label} />
                 </motion.div>
               ))}
             </div>
 
             {/* Decorative element */}
-            <div className="mt-16 p-6 rounded-2xl bg-ink-50 dark:bg-ink-900 border border-ink-100 dark:border-ink-800">
-              <p className="text-sm text-ink-500 dark:text-ink-400 italic leading-relaxed">
+            <div className="mt-16 p-6 dialog-pixel !bg-ink-950">
+              <p className="text-sm text-ink-100 italic leading-relaxed">
                 "I'm always open to discussing new projects, creative ideas, or opportunities to be part of something great."
               </p>
-              <p className="text-xs text-accent font-mono mt-3">— Nguyen Duc Thinh</p>
+              <p className="font-pixel-mono text-lg leading-none text-accent mt-3">— Nguyen Duc Thinh</p>
             </div>
           </FadeIn>
 
@@ -117,7 +130,7 @@ export default function ContactSection() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-mono text-ink-400 dark:text-ink-500 uppercase tracking-wide mb-2">
+                  <label className="block font-pixel-mono text-lg leading-none text-ink-500 dark:text-ink-400 uppercase tracking-wide mb-2">
                     {t('contact.name')}
                   </label>
                   <input
@@ -131,7 +144,7 @@ export default function ContactSection() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-mono text-ink-400 dark:text-ink-500 uppercase tracking-wide mb-2">
+                  <label className="block font-pixel-mono text-lg leading-none text-ink-500 dark:text-ink-400 uppercase tracking-wide mb-2">
                     {t('contact.email')}
                   </label>
                   <input
@@ -147,7 +160,7 @@ export default function ContactSection() {
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-ink-400 dark:text-ink-500 uppercase tracking-wide mb-2">
+                <label className="block font-pixel-mono text-lg leading-none text-ink-500 dark:text-ink-400 uppercase tracking-wide mb-2">
                   {t('contact.subject')}
                 </label>
                 <input
@@ -162,7 +175,7 @@ export default function ContactSection() {
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-ink-400 dark:text-ink-500 uppercase tracking-wide mb-2">
+                <label className="block font-pixel-mono text-lg leading-none text-ink-500 dark:text-ink-400 uppercase tracking-wide mb-2">
                   {t('contact.message')}
                 </label>
                 <textarea
@@ -180,14 +193,16 @@ export default function ContactSection() {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="btn-primary disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                  className="btn-pixel disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {status === 'sending' ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span className="animate-blink">🕊</span>
                       {t('contact.sending')}
                     </>
-                  ) : t('contact.send')}
+                  ) : (
+                    <>✉ {t('contact.send')}</>
+                  )}
                 </button>
 
                 <AnimatePresence mode="wait">
@@ -196,7 +211,7 @@ export default function ContactSection() {
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0 }}
-                      className="text-sm text-emerald-600 dark:text-emerald-400"
+                      className="text-sm text-sea-dark dark:text-sea"
                     >
                       ✓ {t('contact.success')}
                     </motion.p>

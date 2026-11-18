@@ -8,6 +8,10 @@ import { getProfile } from '../lib/firestore'
 import AboutSection from '../components/home/AboutSection'
 import ProjectsSection from '../components/home/ProjectsSection'
 import ContactSection from '../components/home/ContactSection'
+import PixelPhoto from '../components/pixel/PixelPhoto'
+import HeroSky from '../components/pixel/HeroSky'
+import { useCvUrl } from '../lib/cv'
+import TechStackSection from '../components/home/TechStackSection'
 
 export default function HomePage() {
   const { t, i18n } = useTranslation()
@@ -16,6 +20,7 @@ export default function HomePage() {
   useScrollToTop()
 
   const { data: profile } = useFetch(getProfile)
+  const cvUrl = useCvUrl(profile?.cvUrl)
 
   useEffect(() => {
     if (hash) {
@@ -84,108 +89,128 @@ export default function HomePage() {
       </Helmet>
 
       {/* Hero */}
-      <section id="home" className="min-h-[92vh] flex items-center relative overflow-hidden snap-start">
-        {/* Background grid */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]"
-            style={{
-              backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)',
-              backgroundSize: '48px 48px',
-            }}
-          />
-          {/* Accent blob */}
-          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/3 left-1/5 w-64 h-64 bg-accent/5 rounded-full blur-2xl" />
-        </div>
+      <section
+        id="home"
+        data-circuit
+        data-source
+        className="relative min-h-[calc(100svh-4rem)] flex items-end lg:items-center overflow-hidden snap-start bg-ink-950 text-white"
+      >
+        <PixelPhoto
+          src="/hero.webp"
+          srcSmall="/hero-sm.webp"
+          alt="Nguyen Duc Thinh by the sea at sunset"
+          focalX={0.53}
+          targetX={0.68}
+          className="absolute inset-x-0 top-0 h-[62svh] lg:h-auto lg:inset-0"
+        />
 
-        <div className="container-narrow w-full relative z-10">
+        {/* Drifting pixel clouds + birds over the sky (top of the photo) */}
+        <HeroSky className="absolute inset-x-0 top-0 h-[45%] lg:h-[40%]" />
+
+        {/* Readability scrims + CRT texture */}
+        <div className="absolute inset-x-0 top-0 h-[62svh] lg:h-auto lg:inset-0 pointer-events-none bg-gradient-to-t from-ink-950 via-ink-950/10 to-transparent lg:bg-gradient-to-r lg:from-ink-950/85 lg:via-ink-950/35 lg:to-transparent" />
+        <div className="absolute inset-0 pointer-events-none scanlines opacity-40 lg:opacity-60" />
+
+        {/* HUD: top-right status */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1, duration: 0 }}
+          className="absolute top-5 right-5 md:right-8 z-10 hidden sm:flex flex-col items-end gap-1 font-pixel-mono text-xl leading-none text-white/90 pointer-events-none"
+        >
+          <span>
+            <span className="text-accent">●</span> REC · HCMC
+          </span>
+          <span className="text-white/60">LV.2+ FULL-STACK DEV</span>
+        </motion.div>
+
+        <div className="container-narrow w-full relative z-10 pb-20 pt-[48svh] lg:py-24">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
+            className="max-w-xl"
           >
             <motion.p
               variants={itemVariants}
-              className="font-mono text-sm text-accent mb-4 tracking-widest uppercase"
+              className="font-pixel-mono text-2xl text-accent-light mb-2 tracking-wide"
             >
-              {t('home.greeting')}
+              &gt; {t('home.greeting')}
             </motion.p>
 
             <motion.h1
               variants={itemVariants}
-              className="font-display text-6xl md:text-8xl font-semibold tracking-tight text-ink-950 dark:text-ink-50 leading-none mb-6"
+              className="font-pixel text-7xl md:text-9xl leading-[0.85] mb-5 [text-shadow:4px_4px_0_#16152a]"
+              style={{ fontWeight: 400 }}
             >
               {profile?.name.split(' ').slice(-1)[0] ?? 'Thinh'}
               <span className="text-accent">.</span>
             </motion.h1>
 
-            <motion.div variants={itemVariants}>
-              <h2 className="text-2xl md:text-3xl font-display text-ink-600 dark:text-ink-400 mb-6">
-                {lang === 'vi' && profile?.titleVi ? profile.titleVi : (profile?.title ?? t('home.subtitle'))}
-              </h2>
+            <motion.h2
+              variants={itemVariants}
+              className="font-pixel text-2xl md:text-3xl text-white/90 mb-6 [text-shadow:2px_2px_0_#16152a]"
+              style={{ fontWeight: 400 }}
+            >
+              {lang === 'vi' && profile?.titleVi ? profile.titleVi : (profile?.title ?? t('home.subtitle'))}
+            </motion.h2>
+
+            {/* RPG dialogue box */}
+            <motion.div variants={itemVariants} className="dialog-pixel p-5 mb-9">
+              {(profile?.tagline || profile?.taglineVi) && (
+                <p className="font-pixel-mono text-xl leading-snug text-accent-light mb-2">
+                  {lang === 'vi' && profile?.taglineVi ? profile.taglineVi : profile?.tagline}
+                </p>
+              )}
+              <p className="text-[15px] leading-relaxed text-white/85">
+                {lang === 'vi' && profile?.bioVi ? profile.bioVi : profile?.bio}
+              </p>
+              <span
+                aria-hidden
+                className="absolute right-3 bottom-2 font-pixel-mono text-xl text-white animate-blink"
+              >
+                ▼
+              </span>
             </motion.div>
 
-            <motion.p
-              variants={itemVariants}
-              className="text-base md:text-lg text-ink-500 dark:text-ink-400 leading-relaxed mb-3 italic"
-            >
-              {lang === 'vi' && profile?.taglineVi ? profile.taglineVi : profile?.tagline}
-            </motion.p>
-
-            <motion.p
-              variants={itemVariants}
-              className="text-base text-ink-600 dark:text-ink-400 leading-relaxed mb-10"
-            >
-              {lang === 'vi' && profile?.bioVi ? profile.bioVi : profile?.bio}
-            </motion.p>
-
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
-              <button onClick={() => scrollToSection('projects')} className="btn-primary">
-                {t('home.cta_projects')}
+            <motion.div variants={itemVariants} className="flex flex-wrap gap-5">
+              <button onClick={() => scrollToSection('projects')} className="btn-pixel">
+                ▶ {t('home.cta_projects')}
               </button>
-              <button onClick={() => scrollToSection('contact')} className="btn-outline">
+              <button onClick={() => scrollToSection('contact')} className="btn-pixel btn-pixel-ghost">
                 {t('home.cta_contact')}
               </button>
+              {cvUrl && (
+                <a href={cvUrl} download target="_blank" rel="noopener noreferrer" className="btn-pixel btn-pixel-ghost">
+                  ⬇ CV
+                </a>
+              )}
             </motion.div>
 
-            {/* Stats row */}
-            <motion.div
+            {/* Stats as a game HUD */}
+            <motion.dl
               variants={itemVariants}
-              className="flex gap-10 mt-16 pt-10 border-t border-ink-100 dark:border-ink-800"
+              className="flex gap-8 mt-12 font-pixel-mono"
             >
               {[
-                { value: '2+', label: 'Years Experience' },
-                { value: '3+', label: 'Key Projects' },
-                { value: 'HCMC', label: 'Based In' },
+                { value: '2+', label: 'YRS EXP' },
+                { value: '3+', label: 'QUESTS' },
+                { value: 'HCMC', label: 'BASE' },
               ].map(stat => (
-                <div key={stat.label}>
-                  <p className="font-display text-3xl font-semibold text-ink-900 dark:text-ink-100">{stat.value}</p>
-                  <p className="text-sm text-ink-400 dark:text-ink-500 mt-0.5">{stat.label}</p>
+                <div key={stat.label} className="flex flex-col">
+                  <dt className="order-2 text-lg text-white/55 leading-none mt-1">{stat.label}</dt>
+                  <dd className="font-pixel text-3xl leading-none text-white [text-shadow:2px_2px_0_#16152a]">{stat.value}</dd>
                 </div>
               ))}
-            </motion.div>
+            </motion.dl>
           </motion.div>
         </div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-ink-400 dark:text-ink-600"
-        >
-          <span className="text-xs font-mono tracking-widest uppercase">{t('home.scroll')}</span>
-          <motion.div
-            animate={{ y: [0, 6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="w-px h-8 bg-gradient-to-b from-accent to-transparent"
-          />
-        </motion.div>
       </section>
 
       <AboutSection />
       <ProjectsSection />
+      <TechStackSection />
       <ContactSection />
     </>
   )

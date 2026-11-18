@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import FadeIn from '../common/FadeIn'
 import type { Project } from '../../types'
+import TechIcon from '../../game/TechIcon'
+import { play } from '../../game/sound'
+import Sprite from '../../game/Sprite'
+import { CARTRIDGE } from '../../game/sprites'
 
 interface ProjectModalProps {
   project: Project | null
@@ -14,12 +19,35 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const lang = i18n.language
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
+  // Cartridge "insert + load" intro before the content shows.
+  const [booting, setBooting] = useState(false)
 
   // Reset index when project changes
   useEffect(() => {
     setCurrentImageIndex(0)
     setPreviewImage(null)
+    if (!project) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    setBooting(true)
+    play('blip')
+    const t = window.setTimeout(() => {
+      setBooting(false)
+      play('coin')
+    }, 1100)
+    return () => window.clearTimeout(t)
   }, [project?.id])
+
+  // Esc closes (lightbox first)
+  useEffect(() => {
+    if (!project) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      if (previewImage) setPreviewImage(null)
+      else onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [project, previewImage, onClose])
 
   // Prevent scroll when modal is open
   useEffect(() => {
@@ -41,10 +69,11 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const details = lang === 'vi' && project.detailsVi ? project.detailsVi : project.details
   const responsibilities = lang === 'vi' && project.responsibilitiesVi ? project.responsibilitiesVi : project.responsibilities
 
-  return (
+  // Portal: sections get CSS filters (circuit power), which would trap position:fixed.
+  return createPortal(
     <AnimatePresence>
       {project && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
+        <div key="modal" data-powered className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -60,12 +89,14 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-6xl max-h-[90vh] bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+            className="pixel-frame tone-peach relative w-full max-w-6xl max-h-[85vh] bg-surface-light dark:bg-surface-dark overflow-hidden flex flex-col"
           >
+            <AnimatePresence>{booting && <CartridgeIntro title={title} />}</AnimatePresence>
+
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md flex items-center justify-center text-ink-900 dark:text-ink-100 hover:bg-accent hover:text-white transition-all shadow-sm"
+              className="absolute top-4 right-4 z-50 w-10 h-10 border-2 border-ink-950 dark:border-ink-100 bg-surface-light dark:bg-surface-dark flex items-center justify-center font-pixel-mono text-2xl text-ink-900 dark:text-ink-100 hover:bg-accent hover:text-on-accent transition-colors"
               aria-label="Close modal"
             >
               ✕
@@ -77,7 +108,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                   {/* Main content (left column) */}
                   <div className="lg:col-span-2 space-y-8">
                     {/* Hero image / Slider */}
-                    <div className="relative rounded-2xl overflow-hidden aspect-video group bg-ink-100 dark:bg-ink-900 shadow-inner">
+                    <div className="relative overflow-hidden aspect-video group bg-ink-100 dark:bg-ink-900 border-[3px] border-ink-950 dark:border-ink-200">
                       {project.images?.length > 1 ? (
                         <>
                           <AnimatePresence mode="popLayout" initial={false}>
@@ -101,7 +132,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                                 e.stopPropagation();
                                 setCurrentImageIndex((prev) => (prev === 0 ? project.images?.length - 1 : prev - 1));
                               }}
-                              className="w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm hover:bg-black/70 transition-colors pointer-events-auto"
+                              className="w-10 h-10 border-2 border-ink-50 bg-ink-950/70 text-white font-pixel-mono text-2xl flex items-center justify-center backdrop-blur-sm hover:bg-black/70 transition-colors pointer-events-auto"
                               aria-label="Previous image"
                             >
                               ←
@@ -111,7 +142,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                                 e.stopPropagation();
                                 setCurrentImageIndex((prev) => (prev === project.images?.length - 1 ? 0 : prev + 1));
                               }}
-                              className="w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm hover:bg-black/70 transition-colors pointer-events-auto"
+                              className="w-10 h-10 border-2 border-ink-50 bg-ink-950/70 text-white font-pixel-mono text-2xl flex items-center justify-center backdrop-blur-sm hover:bg-black/70 transition-colors pointer-events-auto"
                               aria-label="Next image"
                             >
                               →
@@ -145,20 +176,20 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                       <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
-                        <span className="text-xs font-mono text-white/90 drop-shadow-md">{project.period}</span>
+                        <span className="font-pixel-mono text-lg leading-none px-2 py-1 bg-ink-950/75 text-ink-50">{project.period}</span>
                       </div>
                     </div>
 
                     {/* Header */}
                     <div>
-                      <h2 className="font-display text-3xl md:text-4xl font-semibold text-ink-950 dark:text-ink-50 mb-4">
+                      <h2 className="font-pixel text-3xl md:text-5xl leading-tight text-ink-950 dark:text-ink-50 mb-4">
                         {title}
                       </h2>
                       {detailDescriptions && detailDescriptions.length > 0 ? (
                         <ul className="space-y-3">
                           {detailDescriptions.map((desc, i) => (
                             <li key={i} className="text-base text-ink-600 dark:text-ink-400 flex items-start gap-3">
-                              <span className="mt-2 w-1.5 h-1.5 rounded-full bg-accent/60 flex-shrink-0" />
+                              <span className="mt-2 w-1.5 h-1.5 bg-accent flex-shrink-0" />
                               <span>{desc}</span>
                             </li>
                           ))}
@@ -171,7 +202,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     {/* Overview */}
                     {details && (
                       <FadeIn>
-                        <h3 className="font-display text-2xl font-semibold text-ink-900 dark:text-ink-100 mb-4 tracking-tight">Overview</h3>
+                        <h3 className="font-pixel text-3xl text-ink-900 dark:text-ink-100 mb-4 tracking-tight">Overview</h3>
                         <p className="text-ink-600 dark:text-ink-400 leading-relaxed font-body">{details}</p>
                       </FadeIn>
                     )}
@@ -179,7 +210,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     {/* Responsibilities */}
                     {responsibilities && responsibilities.length > 0 && (
                       <FadeIn delay={0.1}>
-                        <h3 className="font-display text-2xl font-semibold text-ink-900 dark:text-ink-100 mb-5 tracking-tight">
+                        <h3 className="font-pixel text-3xl text-ink-900 dark:text-ink-100 mb-5 tracking-tight">
                           {t('projects.responsibilities')}
                         </h3>
                         <ul className="space-y-3">
@@ -210,12 +241,12 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                       <FadeIn delay={0.15}>
                         <div className="flex gap-3">
                           {project.liveUrl && (
-                            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="btn-primary py-2.5 px-6 text-sm text-center">
+                            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="btn-pixel">
                               {t('projects.view_live')} ↗
                             </a>
                           )}
                           {project.githubUrl && (
-                            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-outline py-2.5 px-6 text-sm text-center">
+                            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn-pixel btn-pixel-outline">
                               {t('projects.view_code')}
                             </a>
                           )}
@@ -224,29 +255,34 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                     )}
 
                     <FadeIn delay={0.2}>
-                      <div className="card p-6 bg-ink-50/50 dark:bg-ink-900/30">
-                        <h4 className="font-mono text-xs text-accent uppercase tracking-widest mb-5">
-                          {t('projects.tech_stack')}
+                      <div className="pixel-frame tone-sea bg-paper-light dark:bg-paper-dark">
+                        <h4 className="frame-title">
+                          ▣ EQUIPMENT · {t('projects.tech_stack')}
                         </h4>
-                        <div className="flex flex-wrap gap-2">
+                        <ul className="grid grid-cols-2 gap-2 p-5">
                           {project.techStack.map(tech => (
-                            <span key={tech} className="tag">{tech}</span>
+                            <li key={tech} className="tag-pixel justify-start">
+                              <span className="icon-slot">
+                                <TechIcon name={tech} scale={1} />
+                              </span>
+                              {tech}
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       </div>
                     </FadeIn>
 
                     <FadeIn delay={0.25}>
-                      <div className="card p-6 bg-ink-50/50 dark:bg-ink-900/30">
-                        <h4 className="font-mono text-xs text-accent uppercase tracking-widest mb-5">Project Stats</h4>
-                        <dl className="space-y-4">
+                      <div className="pixel-frame bg-paper-light dark:bg-paper-dark">
+                        <h4 className="frame-title">▣ SAVE DATA</h4>
+                        <dl className="space-y-4 p-5">
                           <div className="flex flex-col">
-                            <dt className="text-xs text-ink-400 dark:text-ink-500 mb-1 uppercase tracking-wider">Period</dt>
-                            <dd className="text-sm text-ink-800 dark:text-ink-200 font-mono font-medium">{project.period}</dd>
+                            <dt className="font-pixel-mono text-base leading-none text-ink-400 dark:text-ink-500 mb-1 uppercase tracking-wider">Period</dt>
+                            <dd className="font-pixel-mono text-xl leading-none text-ink-800 dark:text-ink-200">{project.period}</dd>
                           </div>
                           {project.liveUrl && (
                             <div className="flex flex-col">
-                              <dt className="text-xs text-ink-400 dark:text-ink-500 mb-1 uppercase tracking-wider">Live Preview</dt>
+                              <dt className="font-pixel-mono text-base leading-none text-ink-400 dark:text-ink-500 mb-1 uppercase tracking-wider">Live Preview</dt>
                               <dd>
                                 <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
                                   className="text-sm text-accent hover:underline break-all font-medium">
@@ -267,7 +303,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
       )}
 
       {/* Photo Preview Overlay (Lightbox) */}
-      <AnimatePresence>
+      <AnimatePresence key="lightbox">
         {previewImage && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
             <motion.div
@@ -299,6 +335,49 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
         )}
       </AnimatePresence>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
+  )
+}
+
+/** Cartridge slides into the slot, then a stepped LOADING bar. */
+function CartridgeIntro({ title }: { title: string }) {
+  return (
+    <motion.div
+      className="absolute inset-0 z-[60] flex flex-col items-center justify-center bg-ink-950 text-ink-100"
+      initial={{ opacity: 1 }}
+      exit={{ clipPath: ['inset(0 0 0 0)', 'inset(0 0 100% 0)'] }}
+      transition={{ duration: 0.25, ease: 'linear' }}
+    >
+      <div className="absolute inset-0 scanlines opacity-40" />
+      {/* Cartridge */}
+      <motion.div
+        initial={{ y: -180 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.45, ease: (t: number) => Math.floor(t * 6) / 6 }}
+        className="relative"
+      >
+        <Sprite sprite={CARTRIDGE} scale={6} />
+        {/* Title over the cartridge label area (cols 4–27, rows 5–14 of the 32×24 grid) */}
+        <div className="absolute flex items-center justify-center px-2" style={{ left: '12.5%', top: '20.8%', width: '75%', height: '41.7%' }}>
+          <span className="font-pixel text-lg leading-tight text-ink-950 text-center line-clamp-2">{title}</span>
+        </div>
+      </motion.div>
+      {/* Slot */}
+      <div className="w-64 h-3 bg-ink-800 border-2 border-ink-600 -mt-1" />
+
+      <p className="font-pixel-mono text-2xl mt-8 tracking-widest">LOADING</p>
+      <div className="mt-2 flex gap-1 p-1 border-2 border-ink-300">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <motion.span
+            key={i}
+            className="w-4 h-4 bg-sea"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.45 + i * 0.055, duration: 0 }}
+          />
+        ))}
+      </div>
+    </motion.div>
   )
 }

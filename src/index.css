@@ -4,20 +4,28 @@
 
 @layer base {
   :root {
-    --accent: 232 93 38;
-    --bg: 250 249 246;
-    --fg: 30 28 22;
-    --muted: 150 144 124;
-    --border: 212 208 197;
-    --card: 255 255 255;
+    /* Dusk palette */
+    --accent: 196 104 80;        /* #c46850 terracotta-peach */
+    --accent-light: 232 145 112; /* #e89170 */
+    --accent-dark: 160 80 62;    /* #a0503e */
+    --on-accent: 255 250 245;
+    --bg: 246 239 231;
+    --fg: 35 33 55;
+    --muted: 110 104 134;
+    --border: 217 207 207;
+    --card: 253 249 244;
   }
 
   .dark {
-    --bg: 20 19 16;
-    --fg: 232 228 218;
-    --muted: 120 116 100;
-    --border: 50 48 40;
-    --card: 28 27 22;
+    --accent: 240 160 124;       /* #f0a07c peach */
+    --accent-light: 246 186 156;
+    --accent-dark: 214 128 98;
+    --on-accent: 28 27 46;
+    --bg: 28 27 46;
+    --fg: 239 230 220;
+    --muted: 145 138 163;
+    --border: 47 44 71;
+    --card: 35 33 55;
   }
 
   * {
@@ -27,7 +35,7 @@
 
   html {
     scroll-behavior: smooth;
-    scroll-snap-type: y mandatory;
+    /* No snap: the pinned horizontal Projects track needs free scrolling. */
     scroll-padding-top: 4rem; /* Match header height */
   }
 
@@ -38,12 +46,12 @@
   }
 
   h1, h2, h3, h4 {
-    font-family: 'Clash Display', system-ui, sans-serif;
-    font-weight: 600;
+    font-family: 'Tiny5', system-ui, sans-serif;
+    font-weight: 400; /* single-weight pixel font: no faux bold */
   }
 
   ::selection {
-    @apply bg-accent text-white;
+    @apply bg-accent text-on-accent;
   }
 
   ::-webkit-scrollbar {
@@ -63,27 +71,248 @@
   }
 
   .section-title {
-    @apply text-4xl md:text-5xl font-display font-semibold tracking-tight text-ink-950 dark:text-ink-50;
+    @apply font-pixel text-5xl md:text-6xl leading-none text-ink-950 dark:text-ink-50;
   }
 
   .section-subtitle {
     @apply text-ink-500 dark:text-ink-400 mt-3 text-lg;
   }
 
+  /* Legacy button names map onto the button system below */
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-body font-semibold rounded-full hover:bg-accent-dark transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0;
+    @apply btn-pixel;
   }
-
   .btn-outline {
-    @apply inline-flex items-center gap-2 px-6 py-3 border border-ink-300 dark:border-ink-700 text-ink-700 dark:text-ink-300 font-body font-semibold rounded-full hover:border-accent hover:text-accent dark:hover:border-accent dark:hover:text-accent transition-all duration-200 hover:-translate-y-0.5;
+    @apply btn-pixel btn-pixel-outline;
   }
 
   .card {
-    @apply bg-white dark:bg-ink-900 border border-ink-100 dark:border-ink-800 rounded-2xl overflow-hidden;
+    @apply pixel-frame bg-paper-light dark:bg-paper-dark overflow-hidden;
   }
 
   .tag {
-    @apply inline-block text-xs font-mono font-medium px-3 py-1 rounded-full bg-ink-100 dark:bg-ink-800 text-ink-600 dark:text-ink-400;
+    @apply tag-pixel;
+  }
+
+  /* ---------- Pixel kit ---------- */
+
+  /*
+   * 8-bit window frame, all box-shadow layers:
+   *   1. notched outline (4 offset shadows leave the corners empty), tinted by tone
+   *   2. inner bevel: light top-left, tone-tinted shade bottom-right
+   *   3. hard drop shadow
+   * Pick a colour with .tone-* (default: neutral ink).
+   */
+  .pixel-frame {
+    --px: 2px;
+    --tone: #b9afbd;
+    --tone-dk: #423e5c;
+    --frame: var(--tone-dk);
+    --hl: rgb(255 255 255 / 0.7);
+    --sh: color-mix(in srgb, var(--tone) 38%, transparent);
+    --drop: color-mix(in srgb, var(--tone-dk) 22%, transparent);
+    --lift: 0px;
+    box-shadow:
+      0 calc(var(--px) * -1) 0 0 var(--frame),
+      0 var(--px) 0 0 var(--frame),
+      calc(var(--px) * -1) 0 0 0 var(--frame),
+      var(--px) 0 0 0 var(--frame),
+      inset var(--px) var(--px) 0 0 var(--hl),
+      inset calc(var(--px) * -1) calc(var(--px) * -1) 0 0 var(--sh),
+      calc(4px + var(--lift)) calc(4px + var(--lift)) 0 0 var(--drop);
+  }
+  .dark .pixel-frame {
+    --frame: var(--tone);
+    --hl: rgb(255 255 255 / 0.07);
+    --sh: rgb(0 0 0 / 0.35);
+    --drop: rgb(8 7 20 / 0.75);
+  }
+
+  /* Two accent tones only (peach = primary, sea = secondary). A frame shows its tone
+     only while its region is powered by the page circuit; otherwise it stays neutral. */
+  [data-powered] .tone-peach { --tone: #f0a07c; --tone-dk: #a0503e; }
+  [data-powered] .tone-sea   { --tone: #6fa3a0; --tone-dk: #3f6f6c; }
+
+  /* Window title bar: sits flush at the top of a .pixel-frame with no padding */
+  .frame-title {
+    @apply flex items-center gap-2 px-3 py-1 font-pixel-mono text-base leading-none uppercase text-ink-950;
+    letter-spacing: 0.08em;
+    background: var(--tone);
+    box-shadow: inset 0 -2px 0 0 var(--frame);
+  }
+  /* three "window buttons" on the right of a title bar */
+  .frame-dots {
+    @apply ml-auto flex gap-1;
+  }
+
+  .card-pixel {
+    @apply bg-paper-light dark:bg-paper-dark overflow-hidden transition-[transform,box-shadow] duration-150;
+    transition-timing-function: steps(3, end);
+  }
+  .card-pixel:hover {
+    transform: translate(-3px, -3px);
+    --lift: 3px;
+    --drop: rgb(var(--accent));
+  }
+
+  /* Section edge: checkered pixel strip instead of a hairline border */
+  .section-edge {
+    position: relative;
+  }
+  .section-edge::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 8px;
+    background: conic-gradient(var(--edge) 25%, transparent 0 50%, var(--edge) 0 75%, transparent 0) 0 0 / 8px 8px;
+    --edge: theme('colors.ink.200');
+    pointer-events: none;
+  }
+  .dark .section-edge::before {
+    --edge: theme('colors.ink.800');
+  }
+
+  /* Alternate band: slightly deeper ground with a faint pixel dither */
+  /* Alternate band: a slightly deeper solder-mask tint */
+  .section-band {
+    background-color: #efe6dc;
+  }
+  .dark .section-band {
+    background-color: #181729;
+  }
+
+  .btn-pixel {
+    --b-ink: #16152a;
+    --b-shadow: #16152a;
+    @apply relative inline-flex items-center justify-center gap-2 h-11 px-5 font-pixel-mono text-xl leading-none uppercase select-none whitespace-nowrap;
+    letter-spacing: 0.08em;
+    color: #16152a;
+    background: rgb(var(--accent));
+    border: 2px solid var(--b-ink);
+    box-shadow: 3px 3px 0 0 var(--b-shadow);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-pixel:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 0 var(--b-shadow);
+    background: rgb(var(--accent-light));
+  }
+  .btn-pixel:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 0 var(--b-shadow);
+  }
+  .btn-pixel:focus-visible {
+    outline: 2px dashed rgb(var(--accent));
+    outline-offset: 4px;
+  }
+  .dark .btn-pixel {
+    --b-shadow: rgb(0 0 0 / 0.55);
+  }
+
+  .btn-pixel-outline {
+    @apply bg-paper-light text-ink-900;
+  }
+  .btn-pixel-outline:hover {
+    @apply bg-ink-50;
+  }
+  .dark .btn-pixel-outline {
+    --b-ink: theme('colors.ink.300');
+    @apply bg-ink-900 text-ink-50;
+  }
+  .dark .btn-pixel-outline:hover {
+    @apply bg-ink-800;
+  }
+
+  .btn-pixel-ghost {
+    --b-ink: rgb(255 255 255 / 0.85);
+    --b-shadow: rgb(0 0 0 / 0.35);
+    @apply text-white backdrop-blur-sm;
+    background: rgb(22 21 42 / 0.45);
+  }
+  .btn-pixel-ghost:hover {
+    background: rgb(255 255 255 / 0.14);
+  }
+
+  .tag-pixel {
+    @apply inline-flex items-center gap-1.5 h-7 px-2 font-pixel-mono text-base leading-none text-ink-700 bg-paper-light border border-ink-300;
+  }
+  .dark .tag-pixel {
+    @apply text-ink-200 bg-ink-900 border-ink-700;
+  }
+
+  /* Filter / toggle chips */
+  .chip {
+    @apply inline-flex items-center gap-1.5 h-8 px-3 font-pixel-mono text-lg leading-none text-ink-700 bg-paper-light border border-ink-300 transition-colors;
+  }
+  .chip:hover {
+    @apply border-ink-900 text-ink-900;
+  }
+  .chip.is-active {
+    @apply border-ink-950 text-ink-950;
+    background: rgb(var(--accent));
+    box-shadow: 2px 2px 0 0 #16152a;
+  }
+  .dark .chip {
+    @apply text-ink-200 bg-ink-900 border-ink-700;
+  }
+  .dark .chip:hover {
+    @apply border-ink-300 text-ink-50;
+  }
+  .dark .chip.is-active {
+    @apply text-ink-950 border-ink-950;
+    box-shadow: 2px 2px 0 0 rgb(0 0 0 / 0.55);
+  }
+
+  /* Square icon button (navbar language / theme) */
+  .icon-btn {
+    @apply inline-flex items-center justify-center h-9 min-w-9 px-2 font-pixel-mono text-lg leading-none text-ink-700 border border-ink-300 transition-colors;
+  }
+  .icon-btn:hover {
+    @apply border-ink-900 text-ink-900 bg-ink-50;
+  }
+  .dark .icon-btn {
+    @apply text-ink-200 border-ink-700;
+  }
+  .dark .icon-btn:hover {
+    @apply border-ink-300 text-ink-50 bg-ink-800;
+  }
+
+  /* Text inputs */
+  .field {
+    @apply w-full px-4 py-3 text-sm text-ink-900 bg-paper-light border-2 border-ink-300 placeholder-ink-400 transition-[border-color,box-shadow];
+  }
+  .field:focus {
+    @apply outline-none border-ink-900;
+    box-shadow: 3px 3px 0 0 rgb(var(--accent));
+  }
+  .dark .field {
+    @apply text-ink-100 bg-ink-900 border-ink-700 placeholder-ink-500;
+  }
+  .dark .field:focus {
+    @apply border-ink-300;
+  }
+
+  /* Light tile behind tech icons so near-black logos read in dark mode too */
+  .icon-slot {
+    @apply inline-flex items-center justify-center p-0.5 bg-ink-50 border border-ink-900/70 dark:border-ink-950;
+  }
+
+  /* RPG dialogue box */
+  .dialog-pixel {
+    @apply relative bg-ink-950/70 backdrop-blur-[2px] text-white;
+    border: 2px solid rgb(255 255 255 / 0.75);
+    box-shadow: 4px 4px 0 0 rgb(0 0 0 / 0.35);
+  }
+
+  /* CRT scanlines, used over photos */
+  .scanlines {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.18) 0px,
+      rgb(0 0 0 / 0.18) 1px,
+      transparent 1px,
+      transparent 3px
+    );
   }
 
   .shimmer {
@@ -119,4 +348,689 @@
   pointer-events: none;
   z-index: 10000;
   transition: transform 0.15s ease;
+}
+
+/* Sprite strip animation (see src/game/Sprite.tsx) */
+@keyframes sprite-strip {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Hero sky: clouds and birds drift right → left across the viewport */
+@keyframes sky-drift {
+  from {
+    transform: translateX(100vw);
+  }
+  to {
+    transform: translateX(-160px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sky-drift {
+    animation: none !important;
+  }
+}
+
+
+/* ======================================================================
+ * Circuit (src/components/pixel/Circuit.tsx): thin copper-style traces.
+ * No blinking or flowing animation; light comes on with a soft fade.
+ * ==================================================================== */
+:root {
+  --trace-off: #d4cacb;
+  --power: #e8673f;
+  --power-hi: #ffd2b0;
+  --power-glow: rgb(255 120 70 / 0.45);
+}
+.dark {
+  --trace-off: #37344f;
+  --power: #ff8556;
+  --power-glow: rgb(255 130 80 / 0.5);
+}
+.circuit-branch {
+  height: 2px;
+  background: var(--trace-off);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.circuit-branch.is-on {
+  background: var(--power);
+  box-shadow: 0 0 6px 1px var(--power-glow);
+}
+/* node: a small ring that fills with light */
+.circuit-node {
+  width: 10px;
+  height: 10px;
+  background: var(--trace-off);
+  box-shadow: inset 0 0 0 2px var(--trace-off), inset 0 0 0 4px rgb(var(--bg));
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.circuit-node.is-on {
+  background: var(--power-hi);
+  box-shadow: inset 0 0 0 2px var(--power), 0 0 10px 2px var(--power-glow);
+}
+
+/* Power switch: slim toggle + LED + label */
+.power-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px 3px 4px;
+  font-family: VT323, monospace;
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: #b9afbd;
+  background: rgb(22 21 42 / 0.75);
+  box-shadow: 0 0 0 1px #423e5c;
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+}
+.power-switch:hover {
+  box-shadow: 0 0 0 1px var(--power);
+}
+.power-switch-track {
+  position: relative;
+  width: 22px;
+  height: 10px;
+  background: #2f2c47;
+  box-shadow: inset 0 0 0 1px #565170;
+  transition: background 0.25s ease;
+}
+.power-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  background: #918aa3;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.power-switch.is-on {
+  color: #fdf9f4;
+}
+.power-switch.is-on .power-switch-track {
+  background: var(--power);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.25), 0 0 8px var(--power-glow);
+}
+.power-switch.is-on .power-switch-knob {
+  transform: translateX(12px);
+  background: #fdf9f4;
+}
+.power-switch-led {
+  width: 5px;
+  height: 5px;
+  background: #565170;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+.power-switch.is-on .power-switch-led {
+  background: #6fd08c;
+  box-shadow: 0 0 6px #6fd08c;
+}
+
+/* ---------- Power states: colour comes from power ---------- */
+/* Content (text, photos, screenshots) always keeps its colour. Without power only the
+   "electrical" parts stay neutral: frames and title bars (via .tone-*), LEDs, traces,
+   lamps, and accent-coloured labels and buttons. Power fades their colour in. */
+.text-accent,
+.bg-accent,
+.btn-pixel,
+.frame-title {
+  transition: color 0.5s ease, background-color 0.5s ease, box-shadow 0.5s ease;
+}
+[data-circuit]:not([data-powered]) .text-accent {
+  color: theme('colors.ink.400');
+}
+[data-circuit]:not([data-powered]) .bg-accent,
+[data-circuit]:not([data-powered]) .btn-pixel:not(.btn-pixel-ghost):not(.btn-pixel-outline) {
+  background-color: theme('colors.ink.400');
+}
+
+/* LEDs: dark when unpowered, lit when the region has power */
+.led {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #565170;
+  box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.3), 0 0 0 1px #16152a;
+  transition: background 0.3s steps(2), box-shadow 0.3s steps(2);
+}
+[data-powered] .led {
+  --led: #e8402a;
+  background: var(--led);
+  box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.25), inset 2px 2px 0 rgb(255 255 255 / 0.45), 0 0 0 1px #16152a,
+    0 0 8px 1px var(--led);
+}
+[data-powered] .led-green { --led: #6fd08c; }
+[data-powered] .led-amber { --led: #ffc857; }
+
+/* Window title-bar dots become three status LEDs (red / amber / green) */
+.frame-dots > i {
+  @apply block w-2 h-2;
+  background: #565170;
+  box-shadow: inset -1px -1px 0 rgb(0 0 0 / 0.35), 0 0 0 1px rgb(22 21 42 / 0.8);
+}
+[data-powered] .frame-dots > i:nth-child(1) { background: #e8402a; box-shadow: 0 0 0 1px #16152a, 0 0 6px #e8402a; }
+[data-powered] .frame-dots > i:nth-child(2) { background: #ffc857; box-shadow: 0 0 0 1px #16152a, 0 0 6px #ffc857; }
+[data-powered] .frame-dots > i:nth-child(3) { background: #6fd08c; box-shadow: 0 0 0 1px #16152a, 0 0 6px #6fd08c; }
+
+
+
+/* ---------- Tech stack board (TechStackSection) ---------- */
+/* A thin trace behind each line of chips (chips are 40px tall, 12px row gap). */
+.tech-bus {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 19px,
+    var(--trace-off) 19px 21px,
+    transparent 21px 52px
+  );
+  transition: filter 0.4s ease;
+}
+[data-powered] .tech-bus {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 19px,
+    color-mix(in srgb, var(--power) 70%, transparent) 19px 21px,
+    transparent 21px 52px
+  );
+}
+.tech-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px 0 8px;
+  font-family: VT323, monospace;
+  font-size: 1.15rem;
+  line-height: 1;
+  color: theme('colors.ink.800');
+  background: theme('colors.paper.light');
+  box-shadow: inset 0 0 0 2px theme('colors.ink.300'), 2px 2px 0 0 rgb(22 21 42 / 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+/* solder pads on both sides of the chip */
+.tech-chip::before,
+.tech-chip::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  width: 4px;
+  height: 8px;
+  background: theme('colors.ink.300');
+}
+.tech-chip::before { left: -4px; }
+.tech-chip::after { right: -4px; }
+.dark .tech-chip {
+  color: theme('colors.ink.100');
+  background: theme('colors.ink.900');
+  box-shadow: inset 0 0 0 2px theme('colors.ink.700'), 2px 2px 0 0 rgb(0 0 0 / 0.35);
+}
+.dark .tech-chip::before,
+.dark .tech-chip::after {
+  background: theme('colors.ink.700');
+}
+.tech-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 2px var(--power), 0 0 10px 0 var(--power-glow);
+}
+[data-powered] .tech-chip::before,
+[data-powered] .tech-chip::after {
+  background: #e9c46a;
+}
+
+/* Light pad behind logos so near-black marks (Next, Express, Linux) read in dark mode */
+.chip-icon {
+  display: inline-flex;
+  padding: 3px;
+  background: theme('colors.ink.50');
+  box-shadow: 0 0 0 1px theme('colors.ink.200');
+}
+.dark .chip-icon {
+  box-shadow: 0 0 0 1px theme('colors.ink.950');
+}
+
+/* Copy-to-clipboard button: two stacked pixel "sheets" */
+.copy-btn {
+  width: 22px;
+  height: 22px;
+  color: theme('colors.ink.500');
+  box-shadow: inset 0 0 0 1px currentColor;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.copy-btn:hover {
+  color: rgb(var(--accent));
+  background: rgb(var(--accent) / 0.1);
+}
+.copy-glyph {
+  position: relative;
+  width: 8px;
+  height: 9px;
+  box-shadow: inset 0 0 0 2px currentColor;
+  transform: translate(1px, 1px);
+}
+.copy-glyph::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 8px;
+  height: 9px;
+  box-shadow: inset 2px 2px 0 0 currentColor;
+}
+
+/* ======================================================================
+ * PCB backdrop (src/components/pixel/PcbBackdrop.tsx)
+ * Bare traces are faint; copper draws itself in when the host is powered.
+ * ==================================================================== */
+:root {
+  --pcb-bare: rgb(22 21 42 / 0.09);
+  --pcb-copper: #c08a4a;
+  --pcb-copper-glow: rgb(214 150 70 / 0.35);
+  --pcb-pour: rgb(111 163 160 / 0.22);
+  --pcb-silk: rgb(22 21 42 / 0.35);
+}
+.dark {
+  --pcb-bare: rgb(255 255 255 / 0.06);
+  --pcb-copper: #e0b865;
+  --pcb-copper-glow: rgb(224 184 101 / 0.35);
+  --pcb-pour: rgb(111 163 160 / 0.16);
+  --pcb-silk: rgb(255 255 255 / 0.28);
+}
+.pcb-bare path,
+.pcb-lit path {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: miter;
+}
+.pcb-bare path { stroke: var(--pcb-bare); }
+.pcb-lit path {
+  stroke: var(--pcb-copper);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 2px var(--pcb-copper-glow));
+  transition: stroke-dashoffset 1.4s ease;
+}
+.pcb-vias circle {
+  fill: none;
+  stroke: var(--pcb-bare);
+  stroke-width: 2;
+  transition: stroke 0.5s ease, fill 0.5s ease;
+}
+.pcb-dots circle {
+  fill: var(--pcb-bare);
+  transition: fill 0.8s ease;
+}
+.pcb-hatch-line { stroke: var(--pcb-pour); }
+.pcb-pour { transition: opacity 0.8s ease; opacity: 0.55; }
+.pcb-silk rect {
+  fill: none;
+  stroke: var(--pcb-silk);
+  stroke-width: 1.5;
+}
+.pcb-silk text {
+  fill: var(--pcb-silk);
+  font-family: VT323, monospace;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+}
+
+/* Powered: the host itself, or any powered region inside it (About has sub-regions) */
+.pcb-host:is([data-powered], :has([data-powered])) .pcb-lit path {
+  stroke-dashoffset: 0;
+}
+.pcb-host:is([data-powered], :has([data-powered])) .pcb-vias circle {
+  stroke: var(--pcb-copper);
+  fill: var(--pcb-copper-glow);
+}
+.pcb-host:is([data-powered], :has([data-powered])) .pcb-dots circle {
+  fill: color-mix(in srgb, var(--pcb-copper) 55%, transparent);
+}
+.pcb-host:is([data-powered], :has([data-powered])) .pcb-pour {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pcb-lit path { transition: none; }
+}
+
+/* Wandering trunk (SVG) */
+.circuit-path,
+.circuit-spur {
+  fill: none;
+  stroke: var(--trace-off);
+  stroke-width: 2;
+  stroke-linejoin: miter;
+}
+.circuit-path-lit {
+  fill: none;
+  stroke: var(--power);
+  stroke-width: 2;
+  stroke-linejoin: miter;
+  filter: drop-shadow(0 0 3px var(--power-glow));
+}
+.circuit-via {
+  fill: rgb(var(--bg));
+  stroke: var(--trace-off);
+  stroke-width: 2;
+  transition: stroke 0.4s ease, fill 0.4s ease;
+}
+.circuit-bend {
+  fill: var(--trace-off);
+}
+g.is-on .circuit-spur {
+  stroke: var(--power);
+  transition: stroke 0.4s ease;
+}
+g.is-on .circuit-via {
+  stroke: var(--power);
+  fill: var(--power-hi);
+}
+.circuit-head-svg {
+  fill: var(--power-hi);
+  stroke: var(--power);
+  stroke-width: 1;
+  filter: drop-shadow(0 0 5px var(--power-glow));
+}
+
+/* ======================================================================
+ * Project card ("module") and experience timeline
+ * ==================================================================== */
+.proj-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 4px 4px 0 0;
+  border-bottom: 2px solid var(--board-line);
+}
+.proj-silk {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 6px;
+  font-family: VT323, monospace;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: theme('colors.ink.50');
+  background: rgb(22 21 42 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  backdrop-filter: blur(3px);
+}
+.proj-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 7px;
+  font-family: VT323, monospace;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: theme('colors.ink.50');
+  background: rgb(22 21 42 / 0.72);
+  border: 1px solid rgb(255 255 255 / 0.35);
+  backdrop-filter: blur(3px);
+}
+.proj-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-family: VT323, monospace;
+  font-size: 1.2rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-top: 1px dashed theme('colors.ink.200');
+}
+.dark .proj-foot { border-top-color: rgb(255 255 255 / 0.1); }
+
+.exp-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 8px;
+  font-family: VT323, monospace;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: theme('colors.ink.600');
+  border: 1px solid theme('colors.ink.300');
+  transition: color 0.5s ease, background 0.5s ease, border-color 0.5s ease;
+}
+.dark .exp-chip {
+  color: theme('colors.ink.300');
+  border-color: theme('colors.ink.700');
+}
+[data-powered] .exp-chip.is-current {
+  color: theme('colors.ink.950');
+  background: rgb(var(--accent));
+  border-color: theme('colors.ink.950');
+}
+
+
+/* Finished stages recede; hover brings them back */
+.exp-done .exp-card,
+.exp-done > div:first-child {
+  opacity: 0.6;
+  transition: opacity 0.25s ease;
+}
+.exp-done:hover .exp-card,
+.exp-done:hover > div:first-child {
+  opacity: 1;
+}
+
+/* Blackout: regions the signal hasn't reached sit in the dark; power fades the lights up.
+   The page circuit layer (z-2, outside the regions) stays visible above the darkness. */
+[data-circuit] {
+  position: relative;
+  isolation: isolate;
+}
+[data-circuit]::after {
+  /* Soft leading edge: the overlay starts --fade above the region and ramps in,
+     so lit → dark is a gradient, not a hard line. */
+  --fade: 160px;
+  --lead: 0px;
+  content: '';
+  position: absolute;
+  inset: 0;
+  top: calc(-1 * (var(--fade) + var(--lead)));
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade));
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade));
+  z-index: 5;
+  pointer-events: none;
+  /* Power off = night: content goes greyscale and dim behind a deep navy tint, the
+     same in both themes (a translucent navy over cream read as muddy purple-grey). */
+  background: rgb(22 21 42 / 0.38);
+  -webkit-backdrop-filter: grayscale(0.85) brightness(0.88);
+  backdrop-filter: grayscale(0.85) brightness(0.88);
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+.dark [data-circuit]::after {
+  background: rgb(10 9 22 / 0.45);
+}
+/* The hero is the top of the page: nothing above it to fade into */
+[data-circuit][data-source]::after {
+  top: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+[data-circuit]:not([data-powered])::after {
+  opacity: 1;
+}
+/* Hero is the power source: only goes dark when the switch is off */
+[data-circuit][data-source]::after {
+  transition-duration: 0.35s;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-circuit]::after { transition: none; }
+}
+
+
+/* ======================================================================
+ * Board: cards as little circuit boards (src/components/common/Board.tsx)
+ * Kept in the components layer so `[data-powered] .tone-*` (same layer,
+ * higher specificity) can recolour them.
+ * ==================================================================== */
+@layer components {
+  .board {
+    --board-neutral: #b9afbd;
+    --board-neutral-hi: #d9cfcf;
+    --tone: var(--board-neutral-hi);
+    --tone-dk: var(--board-neutral);
+    --board-line: var(--tone-dk);
+    --board-ring: #c9c0c6;
+    --board-silk: rgb(22 21 42 / 0.32);
+    position: relative;
+    background: color-mix(in srgb, var(--tone) 9%, #fdf9f4);
+    border: 2px solid var(--board-line);
+    border-radius: 6px;
+    box-shadow: 4px 4px 0 0 rgb(22 21 42 / 0.1);
+    transition: border-color 0.5s ease, background-color 0.5s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .dark .board {
+    --board-neutral: #4a4664;
+    --board-neutral-hi: #5d5878;
+    --board-line: var(--tone);
+    --board-ring: #565170;
+    --board-silk: rgb(255 255 255 / 0.26);
+    background: color-mix(in srgb, var(--tone) 8%, #232137);
+    box-shadow: 4px 4px 0 0 rgb(0 0 0 / 0.4);
+  }
+  [data-powered] .board {
+    --board-ring: var(--pcb-copper);
+  }
+  [data-powered] .board.tone-peach,
+  [data-powered] .board.tone-sea {
+    --board-silk: color-mix(in srgb, var(--tone-dk) 70%, transparent);
+  }
+  .dark [data-powered] .board.tone-peach,
+  .dark [data-powered] .board.tone-sea {
+    --board-silk: color-mix(in srgb, var(--tone) 60%, transparent);
+  }
+
+  /* dashed silkscreen outline */
+  .board::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border: 1px dashed var(--board-silk);
+    border-radius: 3px;
+    pointer-events: none;
+  }
+  /* reference designator, printed up the right edge */
+  .board[data-silk]::after {
+    content: attr(data-silk);
+    position: absolute;
+    right: 0;
+    bottom: 22px;
+    width: 7px;
+    display: flex;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-family: VT323, monospace;
+    font-size: 11px;
+    line-height: 7px;
+    letter-spacing: 0.14em;
+    color: var(--board-silk);
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  /* copper-ringed mounting holes in the four corners */
+  .board-holes {
+    --h: radial-gradient(circle, rgb(var(--bg)) 0 2.2px, var(--board-ring) 2.8px 4.6px, transparent 5.2px);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    background: var(--h), var(--h), var(--h), var(--h);
+    background-size: 12px 12px;
+    background-repeat: no-repeat;
+    background-position: left 3px top 3px, right 3px top 3px, left 3px bottom 3px, right 3px bottom 3px;
+  }
+
+  /* gold edge-connector fingers sticking out of the bottom edge */
+  .board.has-pins {
+    margin-bottom: 8px;
+  }
+  .board-pins {
+    position: absolute;
+    left: 22%;
+    right: 22%;
+    bottom: -9px;
+    height: 7px;
+    background: repeating-linear-gradient(to right, var(--board-neutral) 0 6px, transparent 6px 10px);
+    border-radius: 0 0 2px 2px;
+    transition: background 0.5s ease;
+  }
+  [data-powered] .board-pins {
+    background: repeating-linear-gradient(to right, #e9c46a 0 5px, #a07a1e 5px 6px, transparent 6px 10px);
+  }
+
+  /* interactive boards lift on hover */
+  .board-hover:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 rgb(var(--accent));
+  }
+  .dark .board-hover:hover {
+    box-shadow: 6px 6px 0 0 rgb(var(--accent) / 0.8);
+  }
+
+  /* a title bar sitting flush at the top of a board */
+  .board > .frame-title {
+    border-radius: 4px 4px 0 0;
+  }
+}
+
+/* Coin bullets in the World Map: still by default, spin while the line is hovered */
+.coin-bullet [style*='animation'] {
+  animation-play-state: paused !important;
+}
+.group\/coin:hover .coin-bullet [style*='animation'],
+.exp-card:hover .coin-bullet [style*='animation'] {
+  animation-play-state: running !important;
+}
+
+/* World Map timeline: trace + vias in the 32px gutter between the date column and the card */
+.tl-trace,
+.tl-via {
+  position: absolute;
+  left: 156px; /* 140px date column + half of the 32px gap */
+}
+.tl-trace {
+  top: 32px;
+  height: 100%; /* down to the next stage's via */
+  width: 2px;
+  margin-left: -1px;
+  background: var(--trace-off);
+  transition: background 0.6s ease, box-shadow 0.6s ease;
+}
+.tl-via {
+  top: 26px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: rgb(var(--bg));
+  box-shadow: inset 0 0 0 2px var(--trace-off);
+  transition: background 0.5s ease, box-shadow 0.5s ease;
+  z-index: 1;
+}
+[data-powered] .tl-trace {
+  background: var(--pcb-copper);
+  box-shadow: 0 0 6px var(--pcb-copper-glow);
+}
+[data-powered] .tl-via {
+  box-shadow: inset 0 0 0 2px var(--pcb-copper);
+}
+[data-powered] .tl-via.is-current {
+  background: rgb(var(--accent));
+  box-shadow: inset 0 0 0 2px var(--pcb-copper), 0 0 0 3px rgb(var(--accent) / 0.25), 0 0 12px 2px rgb(var(--accent) / 0.45);
 }

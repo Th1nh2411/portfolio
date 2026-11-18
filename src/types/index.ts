@@ -50,6 +50,8 @@ export interface Profile {
   avatar?: string
   tagline: string
   taglineVi?: string
+  /** Optional CV link (e.g. Firebase Storage / Drive). Falls back to /cv.pdf. */
+  cvUrl?: string
 }
 
 export interface ContactMessage {
