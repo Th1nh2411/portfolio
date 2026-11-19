@@ -50,10 +50,19 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project, zoom, onClose, images.length])
 
+  // lock page scroll without the scrollbar-width jump; pause the background canvas
   useEffect(() => {
-    document.body.style.overflow = project ? 'hidden' : ''
+    const root = document.documentElement
+    if (project) {
+      root.style.overflow = 'hidden'
+      root.classList.add('modal-open')
+    } else {
+      root.style.overflow = ''
+      root.classList.remove('modal-open')
+    }
     return () => {
-      document.body.style.overflow = ''
+      root.style.overflow = ''
+      root.classList.remove('modal-open')
     }
   }, [project])
 
@@ -74,7 +83,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         {project && (
           <div key="pm" data-powered className="fixed inset-0 z-[100] flex items-center justify-center p-3 md:p-6">
             <motion.div
-              className="absolute inset-0 bg-ink-950/70 backdrop-blur-md"
+              className="absolute inset-0 bg-ink-950/80"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -85,10 +94,11 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
               aria-modal="true"
               aria-label={title}
               className="pm2 relative w-full max-w-6xl max-h-[92vh] flex flex-col"
-              initial={{ opacity: 0, y: 24, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 16, scale: 0.98 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              style={{ willChange: 'transform, opacity' }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             >
               {/* Title bar (same as every board on the page) */}
               <div className="pm2-bar">
@@ -132,7 +142,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
                 </div>
               </header>
 
-              <div className="overflow-y-auto overscroll-contain flex-1">
+              <div className="pm2-scroll overflow-y-auto overscroll-contain flex-1">
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-6 lg:gap-8 p-4 md:p-6">
                   {/* ---------- Main ---------- */}
                   <div className="min-w-0 space-y-6">
@@ -250,7 +260,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
         {zoom && (
           <motion.div
             key="zoom"
-            className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md cursor-zoom-out"
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 cursor-zoom-out"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

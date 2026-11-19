@@ -2382,3 +2382,15 @@ html.probe-on .probe-ring {
   .btn-pixel:hover, .icon-btn:hover, .cf-arrow:hover, .dock-btn:hover, .bento-action:hover,
   .pm2-close:hover, .chip:hover, .tk-bus:hover { animation: none; }
 }
+
+/* keep the scrollbar gutter so locking scroll (modal) doesn't shift the page */
+html { scrollbar-gutter: stable; }
+/* while a modal is open, hide the animated background (it would keep repainting under the overlay) */
+html.modal-open .circuit-field { visibility: hidden; }
+
+/* Modal scrollbar: thin, inset from the top/bottom so the track is shorter */
+.pm2-scroll { scrollbar-width: thin; scrollbar-color: rgb(var(--accent) / 0.5) transparent; }
+.pm2-scroll::-webkit-scrollbar { width: 6px; }
+.pm2-scroll::-webkit-scrollbar-track { background: transparent; margin: 24px 0; }
+.pm2-scroll::-webkit-scrollbar-thumb { background: rgb(var(--accent) / 0.45); border-radius: 0; }
+.pm2-scroll::-webkit-scrollbar-thumb:hover { background: rgb(var(--accent) / 0.75); }

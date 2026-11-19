@@ -69,7 +69,10 @@ export default function ProjectBentoCard({ project, index, size, onOpen }: Props
     <article
       ref={ref}
       onPointerMove={onMove}
-      onPointerEnter={() => setHover(true)}
+      onPointerEnter={() => {
+        setHover(true)
+        images.forEach((src) => { const i = new Image(); i.src = src })
+      }}
       onPointerLeave={onLeave}
       onClick={() => onOpen(project)}
       className={`bento group ${size === 'hero' ? 'bento-hero' : ''}`}

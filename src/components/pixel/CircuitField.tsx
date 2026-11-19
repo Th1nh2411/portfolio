@@ -192,6 +192,7 @@ export default function CircuitField() {
 
     const loop = (now: number) => {
       raf = requestAnimationFrame(loop)
+      if (document.documentElement.classList.contains('modal-open')) return
       if (now - last < FRAME) return
       const dt = Math.min(96, now - last) / 16.67
       last = now
@@ -240,5 +241,5 @@ export default function CircuitField() {
     }
   }, [])
 
-  return <canvas ref={ref} aria-hidden className="fixed inset-0 -z-[1] pointer-events-none" />
+  return <canvas ref={ref} aria-hidden className="circuit-field fixed inset-0 -z-[1] pointer-events-none" />
 }

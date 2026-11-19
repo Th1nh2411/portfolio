@@ -10,7 +10,7 @@ import { profileData, projectsData, experienceData, skillsData } from "../data/f
  *   repeat visit renders real content instantly (stale-while-revalidate, see useFetch).
  */
 
-const CACHE_PREFIX = "px.data.v1.";
+const CACHE_PREFIX = "px.data.v3.";
 
 export function readCache<T>(key: string): T | null {
     try {
