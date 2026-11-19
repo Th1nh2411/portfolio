@@ -6,8 +6,6 @@ import {
   CLOUD_B,
   MOON,
   PIGEON,
-  SOUND_OFF,
-  SOUND_ON,
   SUN,
   TROPHY,
   type SpriteDef,
@@ -84,8 +82,6 @@ export const ART = new Map<SpriteDef, ArtDef>([
   [SUN, { src: '/sprites/sun.png', scale: 2, frames: 1 }], // 18×18
   [MOON, { src: '/sprites/moon.png', scale: 2, frames: 1 }], // 18×18
   [TROPHY, { src: '/sprites/trophy.png', scale: 2, frames: 1 }], // 18×18
-  [SOUND_ON, { src: '/sprites/sound-on.png', scale: 2, frames: 1 }], // 18×18
-  [SOUND_OFF, { src: '/sprites/sound-off.png', scale: 2, frames: 1 }], // 18×18
   [CARTRIDGE, { src: '/sprites/cartridge.png', scale: 6, frames: 1 }], // 192×144
   [CLOUD_A, { src: '/sprites/cloud-a.png', scale: 4, frames: 1 }], // 96×40
   [CLOUD_B, { src: '/sprites/cloud-b.png', scale: 4, frames: 1 }], // 96×40

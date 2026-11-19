@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Lightbulb, Lock, Power, ToggleRight, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { ACHIEVEMENTS, onUnlock, resetGame, unlock, useGame, type Achievement } from './store'
-import { isSoundOn, play, setSoundOn, subscribeSound } from './sound'
 import Sprite from './Sprite'
-import { ACHIEVEMENT_ICONS, PIGEON, SOUND_OFF, SOUND_ON, TROPHY } from './sprites'
+import { ACHIEVEMENT_ICONS, PIGEON, TROPHY } from './sprites'
 
-const HUD_BOTTOM = 12
+const HUD_BOTTOM = 12 // trophy sits at the very bottom; the ✉ button floats above it
 
 /**
  * Global game layer: HUD buttons above the road, achievement toasts,
@@ -16,7 +16,6 @@ export default function GameHUD() {
   const { i18n } = useTranslation()
   const lang = i18n.language === 'vi' ? 'vi' : 'en'
   const game = useGame()
-  const soundOn = useSyncExternalStore(subscribeSound, isSoundOn, () => false)
   const [toasts, setToasts] = useState<(Achievement & { key: number })[]>([])
   const [panel, setPanel] = useState(false)
   const [quest, setQuest] = useState(0)
@@ -57,7 +56,6 @@ export default function GameHUD() {
   useEffect(() => {
     const onQuest = () => {
       setQuest((q) => q + 1)
-      play('quest')
     }
     window.addEventListener('px:quest', onQuest)
     return () => window.removeEventListener('px:quest', onQuest)
@@ -80,17 +78,8 @@ export default function GameHUD() {
     }
   }, [panel])
 
-  const toggleSound = () => {
-    const next = !soundOn
-    setSoundOn(next)
-    if (next) {
-      play('blip')
-      unlock('chiptune')
-    }
-  }
 
-  const hudBtn =
-    'pointer-events-auto inline-flex items-center gap-1.5 font-pixel-mono text-lg leading-none px-2 py-1 bg-ink-950/90 text-ink-100 border-2 border-ink-700 hover:border-accent hover:text-accent backdrop-blur-sm active:translate-y-px'
+  const hudBtn = 'dock-btn pointer-events-auto gap-1.5 px-2.5'
 
   return (
     <>
@@ -101,9 +90,6 @@ export default function GameHUD() {
       >
         <button ref={trophyRef} className={hudBtn} onClick={() => setPanel((p) => !p)} aria-expanded={panel} aria-label="Achievements">
           <Sprite sprite={TROPHY} scale={2} fallback="🏆" /> {game.achievements.length}/{ACHIEVEMENTS.length}
-        </button>
-        <button className={hudBtn} onClick={toggleSound} aria-pressed={soundOn} aria-label="Sound">
-          <Sprite sprite={soundOn ? SOUND_ON : SOUND_OFF} scale={2} fallback="♪" /> {soundOn ? 'ON' : 'OFF'}
         </button>
       </div>
 
@@ -119,12 +105,12 @@ export default function GameHUD() {
             exit={{ opacity: 0, y: 12 }}
             transition={{ duration: 0.15, ease: 'linear' }}
             className="fixed right-3 z-50 w-[min(360px,calc(100vw-24px))] max-h-[60vh] flex flex-col bg-ink-950 text-ink-100 border-[3px] border-ink-100 shadow-[6px_6px_0_0_rgb(0_0_0/0.5)]"
-            style={{ bottom: HUD_BOTTOM + 40 }}
+            style={{ bottom: HUD_BOTTOM + 96 }}
           >
             <div className="shrink-0 flex items-center justify-between px-4 py-3 border-b-2 border-ink-800">
               <p className="font-pixel text-xl">{lang === 'vi' ? 'THÀNH TÍCH' : 'ACHIEVEMENTS'}</p>
               <button onClick={() => setPanel(false)} className="font-pixel-mono text-xl hover:text-accent" aria-label="Close">
-                ✕
+                <X size={16} aria-hidden />
               </button>
             </div>
             <ul className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-3 space-y-2">
@@ -135,7 +121,7 @@ export default function GameHUD() {
                     key={a.id}
                     className={`flex items-center gap-3 px-2 py-1.5 border-2 ${got ? 'border-accent/70 bg-accent/10' : 'border-ink-800 opacity-60'}`}
                   >
-                    <span className={`text-xl w-7 text-center ${got ? '' : 'grayscale'}`}>{got ? <Badge a={a} /> : '🔒'}</span>
+                    <span className={`flex justify-center text-xl w-7 ${got ? '' : 'text-ink-500'}`}>{got ? <Badge a={a} /> : <Lock size={16} aria-hidden />}</span>
                     <span className="min-w-0">
                       <span className="block font-pixel-mono text-lg leading-none">{got ? a.title[lang] : '???'}</span>
                       <span className="block text-xs text-ink-400 mt-0.5">{a.desc[lang]}</span>
@@ -225,7 +211,7 @@ function QuestComplete({ play: n, lang }: { play: number; lang: 'en' | 'vi' }) {
             transition={{ duration: 0.45, delay: 0.5, ease: 'easeOut' }}
           >
             <div className="px-8 py-5 bg-ink-950 border-4 border-[#e9c46a] shadow-[8px_8px_0_0_rgb(0_0_0/0.5)] text-center">
-              <p className="font-pixel text-4xl md:text-6xl text-[#e9c46a] [text-shadow:3px_3px_0_#7d5a8c]">
+              <p className="font-pixel text-4xl md:text-6xl text-[#e9c46a] [text-shadow:3px_3px_0_#2f8f84]">
                 QUEST COMPLETE!
               </p>
               <p className="font-pixel-mono text-xl text-ink-200 mt-2">
@@ -240,7 +226,12 @@ function QuestComplete({ play: n, lang }: { play: number; lang: 'en' | 'vi' }) {
 }
 
 /** Hand-drawn badge if Codex supplied one, else the emoji. */
+/** Badges without painted art get a matching line icon instead of an emoji. */
+const BADGE_ICONS: Record<string, typeof Lock> = { lever: ToggleRight, power_cycle: Power, full_power: Lightbulb }
+
 function Badge({ a }: { a: Achievement }) {
   const art = ACHIEVEMENT_ICONS[a.id]
-  return art ? <Sprite sprite={art} scale={2} fallback={a.icon} /> : <>{a.icon}</>
+  const Icon = BADGE_ICONS[a.id]
+  const fallback = Icon ? <Icon size={20} aria-hidden className="text-accent" /> : a.icon
+  return art ? <Sprite sprite={art} scale={2} fallback={fallback} /> : <>{fallback}</>
 }

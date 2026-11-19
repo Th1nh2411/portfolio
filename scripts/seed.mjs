@@ -44,6 +44,7 @@ const projects = [
         title: "Car Rent System",
         titleVi: "Hệ Thống Thuê Xe",
         description: "A full rental lifecycle management system.",
+        descriptionVi: "Hệ thống quản lý toàn bộ vòng đời thuê xe.",
         detailDescriptions: [
             "The system handles the full rental lifecycle, from contract creation and customer management to monthly billing, auto payment processing, and settlement tracking. Use CMS for auto monthly payment and virtual account payment.",
             "Built complex UI/UX components based on Figma designs.",
@@ -71,7 +72,9 @@ const projects = [
     {
         id: "702prime",
         title: "702Prime – Used Car Platform",
+        titleVi: "702Prime – Nền Tảng Xe Cũ",
         description: "A certified used car platform by Kolon Mobility Group.",
+        descriptionVi: "Nền tảng xe cũ được chứng nhận của Kolon Mobility Group.",
         detailDescriptions: [
             "A certified used car platform operated by Kolon Mobility Group, offering high-quality inspected vehicles. The website enables users to browse listings, view detailed vehicle information, and request consultations through a modern, user-friendly interface.",
             "Contributed to building core UI/UX components based on Figma designs.",
@@ -97,7 +100,9 @@ const projects = [
     {
         id: "booking-tour",
         title: "Holidate - Tour Booking Website",
+        titleVi: "Holidate - Website Đặt Tour Du Lịch",
         description: "Full-featured tour booking platform.",
+        descriptionVi: "Nền tảng đặt tour du lịch đầy đủ tính năng.",
         detailDescriptions: [
             "When logging in as a user, you can view tour details, book tours, make payments, update your profile, change your password, view booking history, and chat.",
             "When logging in as an admin, you can manage tour information, guide information, bookings, user feedback, and support clients through the chat box.",

@@ -1,10 +1,9 @@
-import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import Layout from './components/layout/Layout'
-import LoadingSpinner from './components/common/LoadingSpinner'
-
-const HomePage = lazy(() => import('./pages/HomePage'))
+// The home page is the whole site: load it with the shell (a lazy chunk made the footer
+// render first and then jump down = big layout shift).
+import HomePage from './pages/HomePage'
 
 function NotFound() {
   return (
@@ -22,9 +21,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={
-              <Suspense fallback={<LoadingSpinner />}><HomePage /></Suspense>
-            } />
+            <Route path="/" element={<HomePage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

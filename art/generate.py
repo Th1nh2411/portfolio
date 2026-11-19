@@ -30,7 +30,7 @@ class Canvas:
  def round(self,box,r,c): self.d.rounded_rectangle(box,radius=r,fill=PALETTE[c]); return self
 
 # Assets the site no longer uses (road, car, coins, flag, player, old badges): skipped.
-RETIRED = {'car', 'flag-finish', 'player', 'achievements/honk', 'achievements/coins',
+RETIRED = {'car', 'flag-finish', 'sound-on', 'sound-off', 'achievements/chiptune', 'player', 'achievements/honk', 'achievements/coins',
            'achievements/road_trip', 'achievements/artist'}
 
 def save(name, canvases):

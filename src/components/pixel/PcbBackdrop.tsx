@@ -13,7 +13,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 interface Props {
   seed: string
-  label: string // silkscreen text, e.g. "U2 · PROJECTS"
+  /** Kept for call sites; no longer rendered (minimal art). */
+  label?: string
 }
 
 // ---- tiny seeded RNG ---------------------------------------------------------
@@ -72,28 +73,9 @@ function hBus(r: () => number, x0: number, x1: number, y0: number, n: number, di
   return out
 }
 
-/** A vertical bus in a side gutter with one or two 45° jogs. */
-function vBus(r: () => number, x0: number, y0: number, y1: number, n: number, xMin: number, xMax: number): Trace[] {
-  const out: Trace[] = []
-  const jogY = y0 + (y1 - y0) * (0.3 + r() * 0.3)
-  const dx = Math.max(xMin - x0, Math.min(xMax - x0 - (n - 1) * SP, (r() < 0.5 ? -1 : 1) * SP * (1 + Math.floor(r() * 2))))
-  for (let i = 0; i < n; i++) {
-    const x = x0 + i * SP
-    const end = y1 - i * (24 + r() * 50)
-    const pts: Pt[] = [[x, y0]]
-    if (Math.abs(dx) > 0 && jogY < end - 40) {
-      pts.push([x, jogY])
-      pts.push([x + dx, jogY + Math.abs(dx)])
-    }
-    pts.push([pts[pts.length - 1][0], end])
-    out.push({ pts, via: true })
-  }
-  return out
-}
-
 const d = (pts: Pt[]) => pts.map(([x, y], i) => `${i ? 'L' : 'M'}${Math.round(x)} ${Math.round(y)}`).join('')
 
-export default function PcbBackdrop({ seed, label }: Props) {
+export default function PcbBackdrop({ seed }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const [box, setBox] = useState<{ w: number; h: number; cl: number; cr: number } | null>(null)
 
@@ -117,42 +99,13 @@ export default function PcbBackdrop({ seed, label }: Props) {
 
   const art = useMemo(() => {
     if (!box) return null
-    const { w, h, cl, cr } = box
+    const { w, cl } = box
     const r = rng(seed)
     const traces: Trace[] = []
     const hatch: Pt[][] = []
     const dots: Pt[] = []
-    const rightGutter = w - cr
-
-    // top band (section padding above the content)
-    traces.push(...hBus(r, cl - 24, w - 16, 26, 3 + Math.floor(r() * 2), 1, 18, 58))
-    // bottom band, running the other way
-    traces.push(...hBus(r, w - 8, cl + 40, h - 58, 3, -1, h - 70, h - 34))
-
-    // right gutter: a vertical bus + a hatched copper pour
-    if (rightGutter > 56) {
-      const gx = cr + 18
-      traces.push(...vBus(r, gx, 90, h - 100, Math.min(3, Math.floor((rightGutter - 30) / SP)), cr + 10, w - 12))
-      const hx0 = cr + Math.min(28, rightGutter * 0.3)
-      const hy0 = h * (0.35 + r() * 0.15)
-      const hh = Math.min(220, h * 0.25)
-      const c = 10
-      hatch.push([
-        [hx0 + c, hy0],
-        [w + 4, hy0],
-        [w + 4, hy0 + hh],
-        [hx0, hy0 + hh],
-        [hx0, hy0 + c],
-      ])
-    }
-
-    // via clusters near the top bus end and bottom left
-    const cluster = (x: number, y: number, cols: number, rows: number) => {
-      for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) dots.push([x + i * 10, y + j * 10])
-    }
-    cluster(w * (0.55 + r() * 0.2), 72, 4, 2)
-    cluster(cl + 60 + r() * 200, h - 30, 5, 1)
-
+    // Minimal: one slim 2-trace bus across the top band of the section.
+    traces.push(...hBus(r, cl - 24, w - 16, 30, 2, 1, 22, 50))
     return { traces, hatch, dots }
   }, [box, seed])
 
@@ -195,15 +148,6 @@ export default function PcbBackdrop({ seed, label }: Props) {
             ))}
           </g>
 
-          {/* silkscreen label, boxed like the title cartouche in the reference */}
-          {box.w - box.cr > 56 && (
-            <g className="pcb-silk" transform={`translate(${box.w - 28}, 96)`}>
-              <rect x={-11} y={-6} width={22} height={label.length * 11 + 12} rx={2} />
-              <text x={0} y={0} writingMode="vertical-rl" dominantBaseline="middle">
-                {label}
-              </text>
-            </g>
-          )}
         </svg>
       )}
     </div>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { ArrowRight, Download, Quote, Terminal } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
@@ -10,6 +11,7 @@ import ProjectsSection from '../components/home/ProjectsSection'
 import ContactSection from '../components/home/ContactSection'
 import PixelPhoto from '../components/pixel/PixelPhoto'
 import HeroSky from '../components/pixel/HeroSky'
+import HeroScrim from '../components/pixel/HeroScrim'
 import { useCvUrl } from '../lib/cv'
 import TechStackSection from '../components/home/TechStackSection'
 
@@ -91,6 +93,15 @@ export default function HomePage() {
       {/* Hero */}
       <section
         id="home"
+        onPointerMove={(e) => {
+          if (e.pointerType !== 'mouse') return
+          const el = e.currentTarget
+          const r = el.getBoundingClientRect()
+          el.style.setProperty('--hx', `${e.clientX - r.left}px`)
+          el.style.setProperty('--hy', `${e.clientY - r.top}px`)
+          el.style.setProperty('--hr', '260px')
+        }}
+        onPointerLeave={(e) => e.currentTarget.style.setProperty('--hr', '0px')}
         data-circuit
         data-source
         className="relative min-h-[calc(100svh-4rem)] flex items-end lg:items-center overflow-hidden snap-start bg-ink-950 text-white"
@@ -107,9 +118,13 @@ export default function HomePage() {
         {/* Drifting pixel clouds + birds over the sky (top of the photo) */}
         <HeroSky className="absolute inset-x-0 top-0 h-[45%] lg:h-[40%]" />
 
+        {/* Cool colour grade: pulls the warm sunset toward the slate/cobalt palette */}
+        <div aria-hidden className="absolute inset-0 pointer-events-none hero-grade" />
+
         {/* Readability scrims + CRT texture */}
-        <div className="absolute inset-x-0 top-0 h-[62svh] lg:h-auto lg:inset-0 pointer-events-none bg-gradient-to-t from-ink-950 via-ink-950/10 to-transparent lg:bg-gradient-to-r lg:from-ink-950/85 lg:via-ink-950/35 lg:to-transparent" />
-        <div className="absolute inset-0 pointer-events-none scanlines opacity-40 lg:opacity-60" />
+        <div className="hero-scrim absolute inset-x-0 top-0 h-[62svh] lg:h-auto lg:inset-0 pointer-events-none bg-gradient-to-t from-ink-950 via-ink-950/10 to-transparent" />
+        <HeroScrim />
+        <div className="hero-scrim-photo absolute inset-0 pointer-events-none scanlines opacity-40 lg:opacity-60" />
 
         {/* HUD: top-right status */}
         <motion.div
@@ -119,7 +134,7 @@ export default function HomePage() {
           className="absolute top-5 right-5 md:right-8 z-10 hidden sm:flex flex-col items-end gap-1 font-pixel-mono text-xl leading-none text-white/90 pointer-events-none"
         >
           <span>
-            <span className="text-accent">●</span> REC · HCMC
+            <span className="text-accent">●</span> AVAILABLE · HCMC
           </span>
           <span className="text-white/60">LV.2+ FULL-STACK DEV</span>
         </motion.div>
@@ -140,7 +155,7 @@ export default function HomePage() {
 
             <motion.h1
               variants={itemVariants}
-              className="font-pixel text-7xl md:text-9xl leading-[0.85] mb-5 [text-shadow:4px_4px_0_#16152a]"
+              className="font-pixel text-7xl md:text-9xl leading-[0.85] mb-5 [text-shadow:4px_4px_0_#07080a]"
               style={{ fontWeight: 400 }}
             >
               {profile?.name.split(' ').slice(-1)[0] ?? 'Thinh'}
@@ -149,40 +164,44 @@ export default function HomePage() {
 
             <motion.h2
               variants={itemVariants}
-              className="font-pixel text-2xl md:text-3xl text-white/90 mb-6 [text-shadow:2px_2px_0_#16152a]"
+              className="font-heading font-semibold tracking-tight text-2xl md:text-3xl text-white/90 mb-6"
               style={{ fontWeight: 400 }}
             >
               {lang === 'vi' && profile?.titleVi ? profile.titleVi : (profile?.title ?? t('home.subtitle'))}
             </motion.h2>
 
-            {/* RPG dialogue box */}
-            <motion.div variants={itemVariants} className="dialog-pixel p-5 mb-9">
-              {(profile?.tagline || profile?.taglineVi) && (
-                <p className="font-pixel-mono text-xl leading-snug text-accent-light mb-2">
-                  {lang === 'vi' && profile?.taglineVi ? profile.taglineVi : profile?.tagline}
-                </p>
-              )}
-              <p className="text-[15px] leading-relaxed text-white/85">
-                {lang === 'vi' && profile?.bioVi ? profile.bioVi : profile?.bio}
+            {/* Intro: no card (the hero scrim is the background) — prompt + quote + bio
+                with an accent rule on the left */}
+            <motion.figure variants={itemVariants} className="hero-intro mb-8 max-w-[30rem]">
+              <p className="hero-intro-prompt" aria-hidden>
+                <Terminal size={13} /> ~/thinh $ cat README.md
               </p>
-              <span
-                aria-hidden
-                className="absolute right-3 bottom-2 font-pixel-mono text-xl text-white animate-blink"
-              >
-                ▼
-              </span>
-            </motion.div>
+              {!profile ? (
+                <div aria-hidden className="space-y-3 pt-1 min-h-[88px]">
+                  <div className="h-5 w-2/3 bg-white/15" />
+                  <div className="h-3 w-full bg-white/10" />
+                  <div className="h-3 w-5/6 bg-white/10" />
+                </div>
+              ) : (
+                <>
+                  <blockquote className="flex gap-2 font-heading text-lg leading-snug tracking-tight text-white">
+                    <Quote size={16} aria-hidden className="shrink-0 mt-1 text-accent-light" />
+                    <span>{(lang === 'vi' && profile.taglineVi ? profile.taglineVi : profile.tagline)?.replace(/^["“]|["”]$/g, '')}</span>
+                  </blockquote>
+                  <figcaption className="mt-2 text-[15px] leading-relaxed text-white/75">
+                    {lang === 'vi' && profile.bioVi ? profile.bioVi : profile.bio}
+                  </figcaption>
+                </>
+              )}
+            </motion.figure>
 
             <motion.div variants={itemVariants} className="flex flex-wrap gap-5">
               <button onClick={() => scrollToSection('projects')} className="btn-pixel">
-                ▶ {t('home.cta_projects')}
-              </button>
-              <button onClick={() => scrollToSection('contact')} className="btn-pixel btn-pixel-ghost">
-                {t('home.cta_contact')}
+                {t('home.cta_projects')} <ArrowRight size={16} aria-hidden />
               </button>
               {cvUrl && (
                 <a href={cvUrl} download target="_blank" rel="noopener noreferrer" className="btn-pixel btn-pixel-ghost">
-                  ⬇ CV
+                  <Download size={16} aria-hidden /> CV
                 </a>
               )}
             </motion.div>
@@ -199,7 +218,7 @@ export default function HomePage() {
               ].map(stat => (
                 <div key={stat.label} className="flex flex-col">
                   <dt className="order-2 text-lg text-white/55 leading-none mt-1">{stat.label}</dt>
-                  <dd className="font-pixel text-3xl leading-none text-white [text-shadow:2px_2px_0_#16152a]">{stat.value}</dd>
+                  <dd className="font-pixel text-3xl leading-none text-white [text-shadow:2px_2px_0_#07080a]">{stat.value}</dd>
                 </div>
               ))}
             </motion.dl>

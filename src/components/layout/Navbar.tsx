@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import Sprite from '../../game/Sprite'
-import { MOON, SUN } from '../../game/sprites'
+import { Moon, Sun } from 'lucide-react'
+import { Flag } from '../common/Flag'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../../hooks'
 
@@ -109,8 +109,11 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <button
             onClick={toggleLang}
-            className="icon-btn"
+            className="icon-btn gap-1.5 !px-2.5"
+            aria-label={i18n.language === 'en' ? 'Chuyển sang tiếng Việt' : 'Switch to English'}
+            title={i18n.language === 'en' ? 'Tiếng Việt' : 'English'}
           >
+            <Flag code={i18n.language === 'en' ? 'vi' : 'en'} />
             {i18n.language === 'en' ? 'VI' : 'EN'}
           </button>
           <button
@@ -118,7 +121,7 @@ export default function Navbar() {
             aria-label={t(`theme.${isDark ? 'light' : 'dark'}`)}
             className="icon-btn !px-0 w-9"
           >
-            <Sprite sprite={isDark ? SUN : MOON} scale={2} />
+            {isDark ? <Sun size={17} aria-hidden /> : <Moon size={17} aria-hidden />}
           </button>
 
           {/* Mobile burger */}

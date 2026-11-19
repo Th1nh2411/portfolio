@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMotionValue, useMotionValueEvent, useSpring } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { unlock } from '../../game/store'
-import { play } from '../../game/sound'
 
 /**
  * Redstone circuit running down the page gutter (Minecraft-style).
@@ -217,7 +216,6 @@ export default function Circuit() {
 
       setLit((prev) => {
         if (prev.length === next.length && prev.every((v, i) => v === next[i])) return prev
-        if (next.filter(Boolean).length > prev.filter(Boolean).length) play('blip')
         if (next.length && next.every(Boolean)) unlock('full_power')
         return next
       })
@@ -230,15 +228,19 @@ export default function Circuit() {
 
   const route = useMemo(() => (geo ? buildRoute(geo) : null), [geo])
   const litRef = useRef<SVGPathElement>(null)
+  const glowRef = useRef<SVGPathElement>(null)
   const headRef = useRef<SVGRectElement>(null)
   const [spursLit, setSpursLit] = useState(0)
+  const [bendsLit, setBendsLit] = useState(0)
 
   // Drive the lit trace imperatively (no React render per scroll frame).
   const paint = useCallback(
     (f: number) => {
       if (!route || !litRef.current) return
       const { len, pt } = on ? lengthAtY(route, f) : { len: 0, pt: route.pts[0] }
-      litRef.current.setAttribute('stroke-dasharray', `${len} ${route.total + 10}`)
+      const dash = `${len} ${route.total + 10}`
+      litRef.current.setAttribute('stroke-dasharray', dash)
+      glowRef.current?.setAttribute('stroke-dasharray', dash)
       if (headRef.current) {
         headRef.current.setAttribute('x', String(pt[0] - 3))
         headRef.current.setAttribute('y', String(pt[1] - 3))
@@ -246,6 +248,8 @@ export default function Circuit() {
       }
       const n = on ? route.spurs.filter((s) => f >= s.y).length : 0
       setSpursLit((p) => (p === n ? p : n))
+      const b = on ? route.vias.filter(([, y]) => f >= y).length : 0
+      setBendsLit((p) => (p === b ? p : b))
     },
     [route, on],
   )
@@ -255,7 +259,6 @@ export default function Circuit() {
   const toggle = () => {
     const next = !on
     setOn(next)
-    play(next ? 'unlock' : 'error')
     unlock('lever')
     if (!next) cycled.current = 'off'
     else if (cycled.current === 'off') unlock('power_cycle')
@@ -277,10 +280,12 @@ export default function Circuit() {
             <circle cx={s.end[0]} cy={s.end[1]} r={3} className="circuit-via" />
           </g>
         ))}
-        <path ref={litRef} d={routeD} className="circuit-path-lit" strokeDasharray={`0 ${route.total + 10}`} />
+        {/* bend vias sit UNDER the lit trace (drawn on top they cut it) and light up once passed */}
         {route.vias.map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r={2.5} className="circuit-bend" />
+          <circle key={i} cx={x} cy={y} r={2.5} className={`circuit-bend ${i < bendsLit ? 'is-on' : ''}`} />
         ))}
+        <path ref={glowRef} d={routeD} className="circuit-path-glow" strokeDasharray={`0 ${route.total + 10}`} />
+        <path ref={litRef} d={routeD} className="circuit-path-lit" strokeDasharray={`0 ${route.total + 10}`} />
         <rect ref={headRef} width={6} height={6} className="circuit-head-svg" />
       </svg>
 
@@ -312,7 +317,6 @@ export default function Circuit() {
         <span className="power-switch-track">
           <span className="power-switch-knob" />
         </span>
-        <span className="power-switch-led" />
         PWR
       </button>
     </div>

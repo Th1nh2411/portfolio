@@ -7,25 +7,27 @@ export default {
       fontFamily: {
         // Pixel theme: display = Tiny5, mono = VT323 (both ship Vietnamese glyphs).
         display: ['Tiny5', 'sans-serif'],
-        body: ['"Cabinet Grotesk"', 'sans-serif'],
+        body: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
         mono: ['VT323', 'monospace'],
         pixel: ['Tiny5', 'sans-serif'],
+        // Clean, modern headings (Vietnamese glyphs included); pixel fonts stay for accents.
+        heading: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
         'pixel-mono': ['VT323', 'monospace'],
       },
       colors: {
-        // "Dusk" palette, sampled from the hero photo (sunset over the bay).
+        // "Graphite + Cobalt" palette: neutral slate + cobalt accent + muted teal.
         ink: {
-          50: '#f7f2ec',
-          100: '#ece4dc',
-          200: '#d9cfcf',
-          300: '#b9afbd',
-          400: '#918aa3',
-          500: '#6e6886',
-          600: '#565170',
-          700: '#423e5c',
-          800: '#2f2c47',
-          900: '#232137',
-          950: '#16152a',
+          50: '#f6f7f9',
+          100: '#eceef2',
+          200: '#dde1e7',
+          300: '#c2c8d1',
+          400: '#9aa3b0',
+          500: '#737d8c',
+          600: '#555e6c',
+          700: '#3b424d',
+          800: '#272c34',
+          900: '#121418',
+          950: '#07080a',
         },
         // Theme-aware: peach-terracotta in light mode, soft peach in dark mode.
         accent: {
@@ -35,17 +37,17 @@ export default {
         },
         'on-accent': 'rgb(var(--on-accent) / <alpha-value>)',
         sea: {
-          DEFAULT: '#6fa3a0',
-          dark: '#4f8582',
+          DEFAULT: '#5fc4b5',
+          dark: '#23786e',
         },
-        lilac: '#a99bc9',
+        lilac: '#5fc4b5',
         paper: {
-          light: '#fdf9f4',
-          dark: '#232137',
+          light: '#ffffff',
+          dark: '#121418',
         },
         surface: {
-          light: '#f6efe7',
-          dark: '#1c1b2e',
+          light: '#f4f5f7',
+          dark: '#0a0b0d',
         },
       },
       animation: {

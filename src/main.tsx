@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './i18n'
 import './index.css'
+import { prefetchAll } from './lib/firestore'
+
+// Start all data requests before React even renders.
+prefetchAll()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

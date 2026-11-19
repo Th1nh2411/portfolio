@@ -1,5 +1,5 @@
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
 import { useFetch } from '../../hooks'
 import { getSkills } from '../../lib/firestore'
 import FadeIn from '../common/FadeIn'
@@ -9,15 +9,106 @@ import Board from '../common/Board'
 import PcbBackdrop from '../pixel/PcbBackdrop'
 
 /**
- * Tech stack as one circuit board: each category is a row ("bus") and every tech
- * is a component chip soldered onto a thin trace. The traces light up when the
- * region is powered by the page circuit.
+ * Toolkit: every tech is a part on one board. Icons idle in monochrome; the
+ * active group (hovered part, hovered legend chip, or an auto-cycle while the
+ * section is powered) lights up in brand colour and its parts get wired together
+ * with 45° copper traces.
  */
+
+interface Part {
+  name: string
+  group: number
+}
+
+type Pt = [number, number]
+
+/** Trace from a to b: straight run, then a 45° leg into the target. */
+function tracePath([x1, y1]: Pt, [x2, y2]: Pt) {
+  const dx = x2 - x1
+  const dy = y2 - y1
+  if (Math.abs(dx) >= Math.abs(dy)) {
+    const mx = x2 - Math.sign(dx) * Math.abs(dy)
+    return `M${x1} ${y1}H${mx}L${x2} ${y2}`
+  }
+  const my = y2 - Math.sign(dy) * Math.abs(dx)
+  return `M${x1} ${y1}V${my}L${x2} ${y2}`
+}
+
+const CYCLE_MS = 2600
+
 export default function TechStackSection() {
   const { t, i18n } = useTranslation()
   const lang = i18n.language
   const { data: skills, loading } = useFetch(getSkills)
-  const total = skills?.reduce((n, s) => n + s.items.length, 0) ?? 0
+
+  const parts = useMemo<Part[]>(
+    () => (skills ?? []).flatMap((s, g) => s.items.map((name) => ({ name, group: g }))),
+    [skills],
+  )
+  const groups = skills?.length ?? 0
+
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const gridRef = useRef<HTMLUListElement>(null)
+  const [centers, setCenters] = useState<Pt[]>([])
+  const [size, setSize] = useState<[number, number]>([0, 0])
+  const [hoverGroup, setHoverGroup] = useState<number | null>(null)
+  const [hoverPart, setHoverPart] = useState<number | null>(null)
+  const [auto, setAuto] = useState(0)
+
+  // Measure part-pad centres (relative to the wrapper) for the traces.
+  const measure = useCallback(() => {
+    const wrap = wrapRef.current
+    const grid = gridRef.current
+    if (!wrap || !grid) return
+    const box = wrap.getBoundingClientRect()
+    const pts = Array.from(grid.querySelectorAll<HTMLElement>('.tk-pad')).map((el) => {
+      const r = el.getBoundingClientRect()
+      return [Math.round(r.left - box.left + r.width / 2), Math.round(r.top - box.top + r.height / 2)] as Pt
+    })
+    setCenters(pts)
+    setSize([Math.round(box.width), Math.round(box.height)])
+  }, [])
+
+  useLayoutEffect(() => {
+    measure()
+    const wrap = wrapRef.current
+    if (!wrap) return
+    const ro = new ResizeObserver(measure)
+    ro.observe(wrap)
+    return () => ro.disconnect()
+  }, [measure, parts.length])
+
+  // Auto-cycle through groups while idle (and only while the section is powered).
+  useEffect(() => {
+    if (!groups) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const id = window.setInterval(() => {
+      if (gridRef.current?.closest('[data-powered]')) setAuto((a) => (a + 1) % groups)
+    }, CYCLE_MS)
+    return () => window.clearInterval(id)
+  }, [groups])
+
+  const partGroup = hoverPart !== null ? parts[hoverPart]?.group : undefined
+  const active = hoverGroup ?? partGroup ?? auto
+  const userActive = hoverGroup !== null || hoverPart !== null
+
+  // Chain each group's parts in reading order.
+  const wires = useMemo(() => {
+    const out: { d: string; group: number; i: number }[] = []
+    if (!centers.length || centers.length !== parts.length) return out
+    for (let g = 0; g < groups; g++) {
+      const idx = parts.map((p, i) => (p.group === g ? i : -1)).filter((i) => i >= 0)
+      for (let k = 1; k < idx.length; k++) {
+        out.push({ d: tracePath(centers[idx[k - 1]], centers[idx[k]]), group: g, i: k })
+      }
+    }
+    return out
+  }, [centers, parts, groups])
+
+  const groupName = (g: number) => {
+    const s = skills?.[g]
+    return s ? (lang === 'vi' && s.categoryVi ? s.categoryVi : s.category) : ''
+  }
 
   return (
     <section id="skills" data-circuit className="py-24 section-edge pcb-host isolate">
@@ -30,59 +121,87 @@ export default function TechStackSection() {
           <h2 className="section-title mb-4">Toolkit</h2>
           <p className="section-subtitle mb-10 max-w-xl">
             {lang === 'vi'
-              ? 'Các công nghệ mình dùng hằng ngày, gắn trên cùng một bo mạch.'
-              : 'The parts I build with every day, wired onto one board.'}
+              ? 'Các linh kiện mình dùng hằng ngày. Rê chuột để xem chúng nối với nhau thế nào.'
+              : 'The parts I build with every day. Hover to see how they wire together.'}
           </p>
         </FadeIn>
 
         {loading ? (
-          <Skeleton className="h-80" />
+          <Skeleton className="h-[468px]" />
         ) : (
           <FadeIn delay={0.1}>
-            <Board tone="sea" pins silk="MB-01 · TOOLKIT">
-              <p className="frame-title">
-                ▣ BOARD · {String(total).padStart(2, '0')} {lang === 'vi' ? 'LINH KIỆN' : 'PARTS'}
-                <span className="frame-dots" aria-hidden>
-                  <i />
-                  <i />
-                  <i />
+            <Board tone="sea" pins className="tk-board" silk={`MB-01 · ${String(parts.length).padStart(2, '0')} PARTS`}>
+              {/* Legend: one chip per group ("bus") */}
+              <div
+                className="flex flex-wrap items-center gap-2 px-6 pt-6 pb-2"
+                role="group"
+                aria-label="Groups"
+                onMouseLeave={() => setHoverGroup(null)}
+              >
+                <span className="font-pixel-mono text-base leading-none text-ink-400 dark:text-ink-500 tracking-widest mr-2">
+                  BUS
                 </span>
-              </p>
-
-              <div className="divide-y-2 divide-dashed divide-ink-200 dark:divide-ink-700">
-                {skills?.map((skill, i) => (
-                  <motion.div
-                    key={skill.category}
-                    initial={{ opacity: 0, x: -12 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.06, duration: 0.35 }}
-                    className="grid grid-cols-1 md:grid-cols-[190px_1fr] gap-x-6 gap-y-3 px-5 py-5"
+                {skills?.map((s, g) => (
+                  <button
+                    key={s.category}
+                    type="button"
+                    onMouseEnter={() => setHoverGroup(g)}
+                    onFocus={() => setHoverGroup(g)}
+                    onBlur={() => setHoverGroup(null)}
+                    onClick={() => setAuto(g)}
+                    aria-pressed={active === g}
+                    className={`tk-bus ${active === g ? 'is-on' : ''}`}
                   >
-                    {/* Row label */}
-                    <div className="flex md:flex-col md:justify-center gap-x-3 gap-y-1 items-baseline md:items-start">
-                      <span className="flex items-center gap-2 font-pixel-mono text-xl leading-none uppercase tracking-wide text-ink-900 dark:text-ink-100">
-                        <span className="led led-green" />
-                        {lang === 'vi' && skill.categoryVi ? skill.categoryVi : skill.category}
-                      </span>
-                      <span className="font-pixel-mono text-base leading-none text-ink-400 dark:text-ink-500">
-                        {String(skill.items.length).padStart(2, '0')} × {lang === 'vi' ? 'LINH KIỆN' : 'PARTS'}
-                      </span>
-                    </div>
-
-                    {/* Bus with component chips */}
-                    <ul className="tech-bus flex flex-wrap gap-x-4 gap-y-3" aria-label={skill.category}>
-                      {skill.items.map((item) => (
-                        <li key={item} className="tech-chip group">
-                          <span className="chip-icon">
-                            <TechIcon name={item} scale={1.25} />
-                          </span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
+                    {groupName(g)}
+                    <span className="opacity-60">{String(s.items.length).padStart(2, '0')}</span>
+                  </button>
                 ))}
+              </div>
+
+              {/* Parts grid with traces behind */}
+              <div ref={wrapRef} className="relative px-4 pb-8 pt-6 md:px-6">
+                <svg className="absolute left-0 top-0 pointer-events-none" width={size[0]} height={size[1]} aria-hidden>
+                  {wires.map((w, k) => (
+                    <path key={`b${k}`} d={w.d} className="tk-wire-bare" />
+                  ))}
+                  {wires.map((w, k) =>
+                    w.group === active ? (
+                      <path
+                        key={`l${k}-${active}`}
+                        d={w.d}
+                        pathLength={1}
+                        className="tk-wire-lit is-on"
+                        style={{ animationDelay: `${w.i * 90}ms` }}
+                      />
+                    ) : null,
+                  )}
+                </svg>
+
+                <ul
+                  ref={gridRef}
+                  className="relative grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-y-7 gap-x-2"
+                  onMouseLeave={() => setHoverPart(null)}
+                >
+                  {parts.map((p, i) => {
+                    const on = p.group === active
+                    return (
+                      <li
+                        key={`${p.group}-${p.name}`}
+                        className={`tk-part ${on ? 'is-on' : ''} ${hoverPart === i ? 'is-focus' : ''} ${userActive && !on ? 'is-dim' : ''}`}
+                        onMouseEnter={() => setHoverPart(i)}
+                        tabIndex={0}
+                        onFocus={() => setHoverPart(i)}
+                        onBlur={() => setHoverPart(null)}
+                        aria-label={`${p.name} (${groupName(p.group)})`}
+                      >
+                        <span className="tk-pad">
+                          <TechIcon name={p.name} scale={2.25} />
+                        </span>
+                        <span className="tk-name">{p.name}</span>
+                      </li>
+                    )
+                  })}
+                </ul>
               </div>
             </Board>
           </FadeIn>

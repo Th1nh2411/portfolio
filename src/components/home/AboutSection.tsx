@@ -1,4 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { Check, Download, GraduationCap, Play } from 'lucide-react'
+import { GithubIcon } from "../common/BrandIcon";
 import { motion } from "framer-motion";
 import { useFetch } from "../../hooks";
 import { getProfile, getExperience } from "../../lib/firestore";
@@ -98,7 +100,7 @@ export default function AboutSection() {
                                         rel="noopener noreferrer"
                                         className="btn-outline"
                                     >
-                                        ▶ GitHub
+                                        <GithubIcon size={16} /> GitHub
                                     </a>
                                     {cvUrl && (
                                         <a
@@ -108,7 +110,7 @@ export default function AboutSection() {
                                             rel="noopener noreferrer"
                                             className="btn-primary"
                                         >
-                                            ⬇ {t("actions.download_cv")}
+                                            <Download size={16} aria-hidden /> {t("actions.download_cv")}
                                         </a>
                                     )}
                                 </div>
@@ -120,27 +122,15 @@ export default function AboutSection() {
                     <FadeIn delay={0.15} className="lg:col-span-2">
                         <Board tone="sea" silk="EDU-01" className="h-fit">
                             <p className="frame-title">
-                                🎓 {t("about.education_title")}
+                                <GraduationCap size={15} aria-hidden /> {t("about.education_title")}
                                 <span className="frame-dots" aria-hidden><i /><i /><i /></span>
                             </p>
                             <div className="flex gap-4 p-6">
-                                <div className="w-10 h-10 bg-sea/20 border-2 border-sea flex items-center justify-center flex-shrink-0">
-                                    <svg
-                                        className="w-5 h-5 text-sea-dark dark:text-sea"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={1.5}
-                                            d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
-                                        />
-                                    </svg>
+                                <div className="pw w-10 h-10 bg-sea/20 border-2 border-sea flex items-center justify-center flex-shrink-0">
+                                    <GraduationCap size={20} aria-hidden className="text-sea-dark dark:text-sea" />
                                 </div>
                                 <div>
-                                    <h3 className="font-pixel text-ink-900 dark:text-ink-100 text-base leading-tight">
+                                    <h3 className="font-heading font-semibold text-ink-900 dark:text-ink-100 text-base leading-snug">
                                         {t("about.education_school")}
                                     </h3>
                                     <p className="text-sm text-ink-500 dark:text-ink-400 mt-1">
@@ -163,16 +153,15 @@ export default function AboutSection() {
                     <p className="font-pixel-mono text-xl text-accent tracking-widest uppercase mb-2">
                         &gt; {t("about.experience_title")}
                     </p>
-                    <h3 className="font-pixel text-4xl md:text-5xl leading-none text-ink-950 dark:text-ink-50 mb-8">
+                    <h3 className="font-heading font-semibold tracking-tight text-3xl md:text-4xl leading-[1.05] text-ink-950 dark:text-ink-50 mb-8">
                         World Map
                     </h3>
                 </FadeIn>
 
                 {loadingExp ? (
-                    <div className="space-y-6">
-                        {[1, 2].map((i) => (
-                            <Skeleton key={i} className="h-40" />
-                        ))}
+                    <div className="space-y-6 md:pl-[172px]">
+                        <Skeleton className="h-[170px]" />
+                        <Skeleton className="h-[200px]" />
                     </div>
                 ) : (
                     <ol className="relative">
@@ -212,14 +201,14 @@ export default function AboutSection() {
                                                 <p className="md:hidden font-pixel-mono text-base leading-none text-ink-400 dark:text-ink-500 mb-2">
                                                     {exp.period} · WORLD 1-{stage}
                                                 </p>
-                                                <h4 className="font-pixel text-2xl leading-tight text-ink-950 dark:text-ink-50">
+                                                <h4 className="font-heading font-semibold tracking-tight text-xl leading-snug text-ink-950 dark:text-ink-50">
                                                     {lang === "vi" && exp.roleVi ? exp.roleVi : exp.role}
                                                 </h4>
                                                 <p className="text-ink-500 dark:text-ink-400 mt-1">{exp.company}</p>
                                             </div>
                                             <div className="flex items-center gap-1.5">
                                                 <span className={`exp-chip ${current ? "is-current" : ""}`}>
-                                                    {current ? "▶ NOW PLAYING" : "✓ CLEARED"}
+                                                    {current ? <><Play size={9} fill="currentColor" aria-hidden className="mr-1" />NOW PLAYING</> : <><Check size={11} strokeWidth={3} aria-hidden className="mr-1" />CLEARED</>}
                                                 </span>
                                                 <span className="exp-chip">{exp.type.toUpperCase()}</span>
                                             </div>

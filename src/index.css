@@ -4,28 +4,28 @@
 
 @layer base {
   :root {
-    /* Dusk palette */
-    --accent: 196 104 80;        /* #c46850 terracotta-peach */
-    --accent-light: 232 145 112; /* #e89170 */
-    --accent-dark: 160 80 62;    /* #a0503e */
-    --on-accent: 255 250 245;
-    --bg: 246 239 231;
-    --fg: 35 33 55;
-    --muted: 110 104 134;
-    --border: 217 207 207;
-    --card: 253 249 244;
+    /* Graphite + Cobalt palette: neutral slate, one restrained blue accent, muted teal */
+    --accent: 47 95 208;        /* #2f5fd0 cobalt */
+    --accent-light: 74 118 216;  
+    --accent-dark: 36 72 168;   /* #2448a8 */
+    --on-accent: 255 255 255;
+    --bg: 244 245 247;
+    --fg: 18 20 24;
+    --muted: 85 94 108;
+    --border: 221 225 231;
+    --card: 255 255 255;
   }
 
   .dark {
-    --accent: 240 160 124;       /* #f0a07c peach */
-    --accent-light: 246 186 156;
-    --accent-dark: 214 128 98;
-    --on-accent: 28 27 46;
-    --bg: 28 27 46;
-    --fg: 239 230 220;
-    --muted: 145 138 163;
-    --border: 47 44 71;
-    --card: 35 33 55;
+    --accent: 107 155 255;        /* #6b9bff cobalt (dark) */
+    --accent-light: 147 181 255;
+    --accent-dark: 74 118 216;
+    --on-accent: 7 8 10;
+    --bg: 10 11 13;
+    --fg: 230 232 235;
+    --muted: 154 163 176;
+    --border: 32 36 43;
+    --card: 18 20 24;
   }
 
   * {
@@ -41,13 +41,14 @@
 
   body {
     @apply bg-surface-light dark:bg-surface-dark text-ink-900 dark:text-ink-100;
-    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+    font-family: 'Be Vietnam Pro', system-ui, sans-serif; /* full Vietnamese coverage */
     -webkit-font-smoothing: antialiased;
   }
 
   h1, h2, h3, h4 {
-    font-family: 'Tiny5', system-ui, sans-serif;
-    font-weight: 400; /* single-weight pixel font: no faux bold */
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   ::selection {
@@ -71,7 +72,7 @@
   }
 
   .section-title {
-    @apply font-pixel text-5xl md:text-6xl leading-none text-ink-950 dark:text-ink-50;
+    @apply font-heading font-semibold tracking-tight text-4xl md:text-5xl leading-[1.05] text-ink-950 dark:text-ink-50;
   }
 
   .section-subtitle {
@@ -105,8 +106,8 @@
    */
   .pixel-frame {
     --px: 2px;
-    --tone: #b9afbd;
-    --tone-dk: #423e5c;
+    --tone: #c2c8d1;
+    --tone-dk: #3b424d;
     --frame: var(--tone-dk);
     --hl: rgb(255 255 255 / 0.7);
     --sh: color-mix(in srgb, var(--tone) 38%, transparent);
@@ -125,13 +126,11 @@
     --frame: var(--tone);
     --hl: rgb(255 255 255 / 0.07);
     --sh: rgb(0 0 0 / 0.35);
-    --drop: rgb(8 7 20 / 0.75);
+    --drop: rgb(3 4 5 / 0.75);
   }
 
   /* Two accent tones only (peach = primary, sea = secondary). A frame shows its tone
      only while its region is powered by the page circuit; otherwise it stays neutral. */
-  [data-powered] .tone-peach { --tone: #f0a07c; --tone-dk: #a0503e; }
-  [data-powered] .tone-sea   { --tone: #6fa3a0; --tone-dk: #3f6f6c; }
 
   /* Window title bar: sits flush at the top of a .pixel-frame with no padding */
   .frame-title {
@@ -143,16 +142,6 @@
   /* three "window buttons" on the right of a title bar */
   .frame-dots {
     @apply ml-auto flex gap-1;
-  }
-
-  .card-pixel {
-    @apply bg-paper-light dark:bg-paper-dark overflow-hidden transition-[transform,box-shadow] duration-150;
-    transition-timing-function: steps(3, end);
-  }
-  .card-pixel:hover {
-    transform: translate(-3px, -3px);
-    --lift: 3px;
-    --drop: rgb(var(--accent));
   }
 
   /* Section edge: checkered pixel strip instead of a hairline border */
@@ -175,62 +164,85 @@
   /* Alternate band: slightly deeper ground with a faint pixel dither */
   /* Alternate band: a slightly deeper solder-mask tint */
   .section-band {
-    background-color: #efe6dc;
+    background-color: rgb(228 231 236 / 0.45);
   }
   .dark .section-band {
-    background-color: #181729;
+    background-color: rgb(6 7 9 / 0.4);
   }
 
+  /*
+   * Buttons: clean product style. 8px radius, sans label, subtle top highlight,
+   * soft lift on hover, accessible focus ring. Variants:
+   *   .btn-pixel            primary (accent fill)
+   *   .btn-pixel-outline    secondary (hairline border)
+   *   .btn-pixel-ghost      on photos / dark panels (frosted glass)
+   * (Class names kept for compatibility with existing markup.)
+   */
   .btn-pixel {
-    --b-ink: #16152a;
-    --b-shadow: #16152a;
-    @apply relative inline-flex items-center justify-center gap-2 h-11 px-5 font-pixel-mono text-xl leading-none uppercase select-none whitespace-nowrap;
-    letter-spacing: 0.08em;
-    color: #16152a;
+    @apply relative inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg font-heading text-[15px] font-semibold leading-none select-none whitespace-nowrap;
+    letter-spacing: -0.005em;
+    color: #ffffff;
     background: rgb(var(--accent));
-    border: 2px solid var(--b-ink);
-    box-shadow: 3px 3px 0 0 var(--b-shadow);
-    transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.2s ease, color 0.2s ease;
-  }
-  .btn-pixel:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 0 var(--b-shadow);
-    background: rgb(var(--accent-light));
-  }
-  .btn-pixel:active {
-    transform: translate(3px, 3px);
-    box-shadow: 0 0 0 0 var(--b-shadow);
-  }
-  .btn-pixel:focus-visible {
-    outline: 2px dashed rgb(var(--accent));
-    outline-offset: 4px;
+    border: 1px solid rgb(var(--accent-dark));
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.22),
+      0 1px 2px 0 rgb(7 8 10 / 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
   .dark .btn-pixel {
-    --b-shadow: rgb(0 0 0 / 0.55);
+    color: #07080a;
+  }
+  .btn-pixel:hover {
+    background: rgb(var(--accent-light));
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.25),
+      0 6px 16px -4px rgb(var(--accent) / 0.45);
+  }
+  .btn-pixel:active {
+    transform: translateY(0);
+    box-shadow: inset 0 1px 2px 0 rgb(7 8 10 / 0.25);
+  }
+  .btn-pixel:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(var(--bg)), 0 0 0 4px rgb(var(--accent) / 0.7);
   }
 
   .btn-pixel-outline {
-    @apply bg-paper-light text-ink-900;
+    color: theme('colors.ink.900');
+    background: #ffffff;
+    border-color: theme('colors.ink.200');
+    box-shadow: 0 1px 2px 0 rgb(7 8 10 / 0.06);
   }
   .btn-pixel-outline:hover {
-    @apply bg-ink-50;
+    background: theme('colors.ink.50');
+    border-color: theme('colors.ink.300');
+    box-shadow: 0 4px 12px -4px rgb(7 8 10 / 0.15);
   }
   .dark .btn-pixel-outline {
-    --b-ink: theme('colors.ink.300');
-    @apply bg-ink-900 text-ink-50;
+    color: theme('colors.ink.50');
+    background: rgb(255 255 255 / 0.04);
+    border-color: rgb(255 255 255 / 0.12);
+    box-shadow: none;
   }
   .dark .btn-pixel-outline:hover {
-    @apply bg-ink-800;
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(255 255 255 / 0.2);
   }
 
-  .btn-pixel-ghost {
-    --b-ink: rgb(255 255 255 / 0.85);
-    --b-shadow: rgb(0 0 0 / 0.35);
-    @apply text-white backdrop-blur-sm;
-    background: rgb(22 21 42 / 0.45);
+  .btn-pixel-ghost,
+  .dark .btn-pixel-ghost {
+    color: #ffffff;
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(255 255 255 / 0.22);
+    box-shadow: none;
+    backdrop-filter: blur(8px);
   }
-  .btn-pixel-ghost:hover {
-    background: rgb(255 255 255 / 0.14);
+  .btn-pixel-ghost:hover,
+  .dark .btn-pixel-ghost:hover {
+    background: rgb(255 255 255 / 0.16);
+    border-color: rgb(255 255 255 / 0.35);
+    box-shadow: none;
   }
 
   .tag-pixel {
@@ -242,68 +254,65 @@
 
   /* Filter / toggle chips */
   .chip {
-    @apply inline-flex items-center gap-1.5 h-8 px-3 font-pixel-mono text-lg leading-none text-ink-700 bg-paper-light border border-ink-300 transition-colors;
+    @apply inline-flex items-center gap-1.5 h-8 px-3 rounded-full font-heading text-sm font-medium leading-none text-ink-600 bg-white border border-ink-200 transition-colors;
   }
   .chip:hover {
-    @apply border-ink-900 text-ink-900;
+    @apply border-ink-300 text-ink-900;
   }
   .chip.is-active {
-    @apply border-ink-950 text-ink-950;
+    color: #ffffff;
     background: rgb(var(--accent));
-    box-shadow: 2px 2px 0 0 #16152a;
+    border-color: rgb(var(--accent));
   }
   .dark .chip {
-    @apply text-ink-200 bg-ink-900 border-ink-700;
+    color: theme('colors.ink.300');
+    background: rgb(255 255 255 / 0.04);
+    border-color: rgb(255 255 255 / 0.1);
   }
   .dark .chip:hover {
-    @apply border-ink-300 text-ink-50;
+    color: theme('colors.ink.50');
+    border-color: rgb(255 255 255 / 0.22);
   }
   .dark .chip.is-active {
-    @apply text-ink-950 border-ink-950;
-    /* `.dark .chip` sets a dark fill with the same specificity; restore the accent */
+    color: #07080a;
     background: rgb(var(--accent));
-    box-shadow: 2px 2px 0 0 rgb(0 0 0 / 0.55);
+    border-color: rgb(var(--accent));
+    box-shadow: none;
   }
 
   /* Square icon button (navbar language / theme) */
   .icon-btn {
-    @apply inline-flex items-center justify-center h-9 min-w-9 px-2 font-pixel-mono text-lg leading-none text-ink-700 border border-ink-300 transition-colors;
+    @apply inline-flex items-center justify-center h-9 min-w-9 px-2 rounded-lg font-heading text-sm font-semibold leading-none text-ink-700 border border-ink-200 transition-colors;
   }
   .icon-btn:hover {
-    @apply border-ink-900 text-ink-900 bg-ink-50;
+    @apply border-ink-300 text-ink-950 bg-ink-50;
   }
   .dark .icon-btn {
-    @apply text-ink-200 border-ink-700;
+    color: theme('colors.ink.200');
+    border-color: rgb(255 255 255 / 0.12);
   }
   .dark .icon-btn:hover {
-    @apply border-ink-300 text-ink-50 bg-ink-800;
+    color: #ffffff;
+    border-color: rgb(255 255 255 / 0.22);
+    background: rgb(255 255 255 / 0.06);
   }
 
   /* Text inputs */
   .field {
-    @apply w-full px-4 py-3 text-sm text-ink-900 bg-paper-light border-2 border-ink-300 placeholder-ink-400 transition-[border-color,box-shadow];
+    @apply w-full px-3.5 py-2.5 rounded-lg text-[15px] text-ink-900 bg-white border border-ink-200 placeholder-ink-400 transition-[border-color,box-shadow];
   }
   .field:focus {
-    @apply outline-none border-ink-900;
-    box-shadow: 3px 3px 0 0 rgb(var(--accent));
+    @apply outline-none;
+    border-color: rgb(var(--accent));
+    box-shadow: 0 0 0 3px rgb(var(--accent) / 0.18);
   }
   .dark .field {
-    @apply text-ink-100 bg-ink-900 border-ink-700 placeholder-ink-500;
+    @apply text-ink-100 placeholder-ink-500;
+    background: rgb(255 255 255 / 0.03);
+    border-color: rgb(255 255 255 / 0.1);
   }
   .dark .field:focus {
-    @apply border-ink-300;
-  }
-
-  /* Light tile behind tech icons so near-black logos read in dark mode too */
-  .icon-slot {
-    @apply inline-flex items-center justify-center p-0.5 bg-ink-50 border border-ink-900/70 dark:border-ink-950;
-  }
-
-  /* RPG dialogue box */
-  .dialog-pixel {
-    @apply relative bg-ink-950/70 backdrop-blur-[2px] text-white;
-    border: 2px solid rgb(255 255 255 / 0.75);
-    box-shadow: 4px 4px 0 0 rgb(0 0 0 / 0.35);
+    border-color: rgb(var(--accent));
   }
 
   /* CRT scanlines, used over photos */
@@ -340,18 +349,6 @@
   z-index: 9999;
 }
 
-/* Cursor dot */
-.cursor-dot {
-  width: 8px;
-  height: 8px;
-  background: rgb(var(--accent));
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  z-index: 10000;
-  transition: transform 0.15s ease;
-}
-
 /* Sprite strip animation (see src/game/Sprite.tsx) */
 @keyframes sprite-strip {
   to {
@@ -374,21 +371,20 @@
   }
 }
 
-
 /* ======================================================================
  * Circuit (src/components/pixel/Circuit.tsx): thin copper-style traces.
  * No blinking or flowing animation; light comes on with a soft fade.
  * ==================================================================== */
 :root {
-  --trace-off: #d4cacb;
-  --power: #e8673f;
-  --power-hi: #ffd2b0;
-  --power-glow: rgb(255 120 70 / 0.45);
+  --trace-off: #d6dae1;
+  --power: #2f5fd0;          /* light mode: deeper cobalt so traces read on pale paper */
+  --power-hi: #dbe6ff;
+  --power-glow: rgb(47 95 208 / 0.4);
 }
 .dark {
-  --trace-off: #37344f;
-  --power: #ff8556;
-  --power-glow: rgb(255 130 80 / 0.5);
+  --trace-off: #2b3039;
+  --power: #8fb3ff;
+  --power-glow: rgb(143 179 255 / 0.5);
 }
 .circuit-branch {
   height: 2px;
@@ -422,9 +418,9 @@
   font-size: 15px;
   line-height: 1;
   letter-spacing: 0.06em;
-  color: #b9afbd;
-  background: rgb(22 21 42 / 0.75);
-  box-shadow: 0 0 0 1px #423e5c;
+  color: #c2c8d1;
+  background: rgb(7 8 10 / 0.75);
+  box-shadow: 0 0 0 1px #3b424d;
   backdrop-filter: blur(2px);
   cursor: pointer;
 }
@@ -435,8 +431,8 @@
   position: relative;
   width: 22px;
   height: 10px;
-  background: #2f2c47;
-  box-shadow: inset 0 0 0 1px #565170;
+  background: #272c34;
+  box-shadow: inset 0 0 0 1px #555e6c;
   transition: background 0.25s ease;
 }
 .power-switch-knob {
@@ -445,11 +441,11 @@
   left: 2px;
   width: 6px;
   height: 6px;
-  background: #918aa3;
+  background: #9aa3b0;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 .power-switch.is-on {
-  color: #fdf9f4;
+  color: #ffffff;
 }
 .power-switch.is-on .power-switch-track {
   background: var(--power);
@@ -457,17 +453,7 @@
 }
 .power-switch.is-on .power-switch-knob {
   transform: translateX(12px);
-  background: #fdf9f4;
-}
-.power-switch-led {
-  width: 5px;
-  height: 5px;
-  background: #565170;
-  transition: background 0.25s ease, box-shadow 0.25s ease;
-}
-.power-switch.is-on .power-switch-led {
-  background: #6fd08c;
-  box-shadow: 0 0 6px #6fd08c;
+  background: #ffffff;
 }
 
 /* ---------- Power states: colour comes from power ---------- */
@@ -493,14 +479,14 @@
   display: inline-block;
   width: 8px;
   height: 8px;
-  background: #565170;
-  box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.3), 0 0 0 1px #16152a;
+  background: #555e6c;
+  box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.3), 0 0 0 1px #07080a;
   transition: background 0.3s steps(2), box-shadow 0.3s steps(2);
 }
 [data-powered] .led {
   --led: #e8402a;
   background: var(--led);
-  box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.25), inset 2px 2px 0 rgb(255 255 255 / 0.45), 0 0 0 1px #16152a,
+  box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.25), inset 2px 2px 0 rgb(255 255 255 / 0.45), 0 0 0 1px #07080a,
     0 0 8px 1px var(--led);
 }
 [data-powered] .led-green { --led: #6fd08c; }
@@ -509,117 +495,25 @@
 /* Window title-bar dots become three status LEDs (red / amber / green) */
 .frame-dots > i {
   @apply block w-2 h-2;
-  background: #565170;
-  box-shadow: inset -1px -1px 0 rgb(0 0 0 / 0.35), 0 0 0 1px rgb(22 21 42 / 0.8);
+  background: #555e6c;
+  box-shadow: inset -1px -1px 0 rgb(0 0 0 / 0.35), 0 0 0 1px rgb(7 8 10 / 0.8);
 }
-[data-powered] .frame-dots > i:nth-child(1) { background: #e8402a; box-shadow: 0 0 0 1px #16152a, 0 0 6px #e8402a; }
-[data-powered] .frame-dots > i:nth-child(2) { background: #ffc857; box-shadow: 0 0 0 1px #16152a, 0 0 6px #ffc857; }
-[data-powered] .frame-dots > i:nth-child(3) { background: #6fd08c; box-shadow: 0 0 0 1px #16152a, 0 0 6px #6fd08c; }
-
-
-
-/* ---------- Tech stack board (TechStackSection) ---------- */
-/* A thin trace behind each line of chips (chips are 40px tall, 12px row gap). */
-.tech-bus {
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 19px,
-    var(--trace-off) 19px 21px,
-    transparent 21px 52px
-  );
-  transition: filter 0.4s ease;
-}
-[data-powered] .tech-bus {
-  background: repeating-linear-gradient(
-    to bottom,
-    transparent 0 19px,
-    color-mix(in srgb, var(--power) 70%, transparent) 19px 21px,
-    transparent 21px 52px
-  );
-}
-.tech-chip {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 12px 0 8px;
-  font-family: VT323, monospace;
-  font-size: 1.15rem;
-  line-height: 1;
-  color: theme('colors.ink.800');
-  background: theme('colors.paper.light');
-  box-shadow: inset 0 0 0 2px theme('colors.ink.300'), 2px 2px 0 0 rgb(22 21 42 / 0.12);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-/* solder pads on both sides of the chip */
-.tech-chip::before,
-.tech-chip::after {
-  content: '';
-  position: absolute;
-  top: 16px;
-  width: 4px;
-  height: 8px;
-  background: theme('colors.ink.300');
-}
-.tech-chip::before { left: -4px; }
-.tech-chip::after { right: -4px; }
-.dark .tech-chip {
-  color: theme('colors.ink.100');
-  background: theme('colors.ink.900');
-  box-shadow: inset 0 0 0 2px theme('colors.ink.700'), 2px 2px 0 0 rgb(0 0 0 / 0.35);
-}
-.dark .tech-chip::before,
-.dark .tech-chip::after {
-  background: theme('colors.ink.700');
-}
-.tech-chip:hover {
-  transform: translateY(-2px);
-  box-shadow: inset 0 0 0 2px var(--power), 0 0 10px 0 var(--power-glow);
-}
-[data-powered] .tech-chip::before,
-[data-powered] .tech-chip::after {
-  background: #e9c46a;
-}
-
-/* Light pad behind logos so near-black marks (Next, Express, Linux) read in dark mode */
-.chip-icon {
-  display: inline-flex;
-  padding: 3px;
-  background: theme('colors.ink.50');
-  box-shadow: 0 0 0 1px theme('colors.ink.200');
-}
-.dark .chip-icon {
-  box-shadow: 0 0 0 1px theme('colors.ink.950');
-}
+[data-powered] .frame-dots > i:nth-child(1) { background: #e8402a; box-shadow: 0 0 0 1px #07080a, 0 0 6px #e8402a; }
+[data-powered] .frame-dots > i:nth-child(2) { background: #ffc857; box-shadow: 0 0 0 1px #07080a, 0 0 6px #ffc857; }
+[data-powered] .frame-dots > i:nth-child(3) { background: #6fd08c; box-shadow: 0 0 0 1px #07080a, 0 0 6px #6fd08c; }
 
 /* Copy-to-clipboard button: two stacked pixel "sheets" */
 .copy-btn {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
   color: theme('colors.ink.500');
-  box-shadow: inset 0 0 0 1px currentColor;
+  box-shadow: inset 0 0 0 1px rgb(var(--border));
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 .copy-btn:hover {
   color: rgb(var(--accent));
   background: rgb(var(--accent) / 0.1);
-}
-.copy-glyph {
-  position: relative;
-  width: 8px;
-  height: 9px;
-  box-shadow: inset 0 0 0 2px currentColor;
-  transform: translate(1px, 1px);
-}
-.copy-glyph::before {
-  content: '';
-  position: absolute;
-  left: -3px;
-  top: -3px;
-  width: 8px;
-  height: 9px;
-  box-shadow: inset 2px 2px 0 0 currentColor;
 }
 
 /* ======================================================================
@@ -627,23 +521,23 @@
  * Bare traces are faint; copper draws itself in when the host is powered.
  * ==================================================================== */
 :root {
-  --pcb-bare: rgb(22 21 42 / 0.09);
-  --pcb-copper: #c08a4a;
-  --pcb-copper-glow: rgb(214 150 70 / 0.35);
-  --pcb-pour: rgb(111 163 160 / 0.22);
-  --pcb-silk: rgb(22 21 42 / 0.35);
+  --pcb-bare: rgb(7 8 10 / 0.09);
+  --pcb-copper: #4a76d8;
+  --pcb-copper-glow: rgb(74 118 216 / 0.35);
+  --pcb-pour: rgb(95 196 181 / 0.22);
+  --pcb-silk: rgb(7 8 10 / 0.35);
 }
 .dark {
   --pcb-bare: rgb(255 255 255 / 0.06);
-  --pcb-copper: #e0b865;
-  --pcb-copper-glow: rgb(224 184 101 / 0.35);
-  --pcb-pour: rgb(111 163 160 / 0.16);
+  --pcb-copper: #7aa2ff;
+  --pcb-copper-glow: rgb(122 162 255 / 0.35);
+  --pcb-pour: rgb(95 196 181 / 0.16);
   --pcb-silk: rgb(255 255 255 / 0.28);
 }
 .pcb-bare path,
 .pcb-lit path {
   fill: none;
-  stroke-width: 2;
+  stroke-width: 1.5;
   stroke-linejoin: miter;
 }
 .pcb-bare path { stroke: var(--pcb-bare); }
@@ -651,8 +545,9 @@
   stroke: var(--pcb-copper);
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  filter: drop-shadow(0 0 2px var(--pcb-copper-glow));
+  opacity: 0.55;
   transition: stroke-dashoffset 1.4s ease;
+  will-change: stroke-dashoffset;
 }
 .pcb-vias circle {
   fill: none;
@@ -666,17 +561,6 @@
 }
 .pcb-hatch-line { stroke: var(--pcb-pour); }
 .pcb-pour { transition: opacity 0.8s ease; opacity: 0.55; }
-.pcb-silk rect {
-  fill: none;
-  stroke: var(--pcb-silk);
-  stroke-width: 1.5;
-}
-.pcb-silk text {
-  fill: var(--pcb-silk);
-  font-family: VT323, monospace;
-  font-size: 14px;
-  letter-spacing: 0.12em;
-}
 
 /* Powered: the host itself, or any powered region inside it (About has sub-regions) */
 .pcb-host:is([data-powered], :has([data-powered])) .pcb-lit path {
@@ -709,7 +593,14 @@
   stroke: var(--power);
   stroke-width: 2;
   stroke-linejoin: miter;
-  filter: drop-shadow(0 0 3px var(--power-glow));
+}
+/* glow = a wide translucent stroke under the trace (cheap; a CSS filter here was
+   re-rasterised on every scroll frame) */
+.circuit-path-glow {
+  fill: none;
+  stroke: var(--power-glow);
+  stroke-width: 7;
+  stroke-linejoin: miter;
 }
 .circuit-via {
   fill: rgb(var(--bg));
@@ -719,6 +610,10 @@
 }
 .circuit-bend {
   fill: var(--trace-off);
+  transition: fill 0.3s ease;
+}
+.circuit-bend.is-on {
+  fill: var(--power);
 }
 g.is-on .circuit-spur {
   stroke: var(--power);
@@ -734,62 +629,6 @@ g.is-on .circuit-via {
   stroke-width: 1;
   filter: drop-shadow(0 0 5px var(--power-glow));
 }
-
-/* ======================================================================
- * Project card ("module") and experience timeline
- * ==================================================================== */
-.proj-media {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  border-radius: 4px 4px 0 0;
-  border-bottom: 2px solid var(--board-line);
-}
-.proj-silk {
-  display: inline-flex;
-  align-items: center;
-  height: 22px;
-  padding: 0 6px;
-  font-family: VT323, monospace;
-  font-size: 16px;
-  line-height: 1;
-  letter-spacing: 0.08em;
-  color: theme('colors.ink.50');
-  background: rgb(22 21 42 / 0.72);
-  border: 1px solid rgb(255 255 255 / 0.35);
-  backdrop-filter: blur(3px);
-}
-.proj-status {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 22px;
-  padding: 0 7px;
-  font-family: VT323, monospace;
-  font-size: 16px;
-  line-height: 1;
-  letter-spacing: 0.08em;
-  color: theme('colors.ink.50');
-  background: rgb(22 21 42 / 0.72);
-  border: 1px solid rgb(255 255 255 / 0.35);
-  backdrop-filter: blur(3px);
-}
-.proj-foot {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  font-family: VT323, monospace;
-  font-size: 1.2rem;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-top: 1px dashed theme('colors.ink.200');
-}
-.dark .proj-foot { border-top-color: rgb(255 255 255 / 0.1); }
 
 .exp-chip {
   display: inline-flex;
@@ -813,7 +652,6 @@ g.is-on .circuit-via {
   background: rgb(var(--accent));
   border-color: theme('colors.ink.950');
 }
-
 
 /* Finished stages recede; hover brings them back */
 .exp-done .exp-card,
@@ -847,14 +685,13 @@ g.is-on .circuit-via {
   pointer-events: none;
   /* Power off = night: content goes greyscale and dim behind a deep navy tint, the
      same in both themes (a translucent navy over cream read as muddy purple-grey). */
-  background: rgb(22 21 42 / 0.24);
-  -webkit-backdrop-filter: grayscale(0.6) brightness(0.94);
-  backdrop-filter: grayscale(0.6) brightness(0.94);
+  /* plain tint only: backdrop-filter over whole sections is very costly on weak GPUs */
+  background: rgb(7 8 10 / 0.3);
   opacity: 0;
   transition: opacity 0.7s ease;
 }
 .dark [data-circuit]::after {
-  background: rgb(10 9 22 / 0.3);
+  background: rgb(4 5 6 / 0.3);
 }
 /* The hero is the top of the page: nothing above it to fade into */
 [data-circuit][data-source]::after {
@@ -873,7 +710,6 @@ g.is-on .circuit-via {
   [data-circuit]::after { transition: none; }
 }
 
-
 /* ======================================================================
  * Board: cards as little circuit boards (src/components/common/Board.tsx)
  * Kept in the components layer so `[data-powered] .tone-*` (same layer,
@@ -881,27 +717,27 @@ g.is-on .circuit-via {
  * ==================================================================== */
 @layer components {
   .board {
-    --board-neutral: #b9afbd;
-    --board-neutral-hi: #d9cfcf;
+    --board-neutral: #c2c8d1;
+    --board-neutral-hi: #dde1e7;
     --tone: var(--board-neutral-hi);
     --tone-dk: var(--board-neutral);
     --board-line: var(--tone-dk);
-    --board-ring: #c9c0c6;
-    --board-silk: rgb(22 21 42 / 0.32);
+    --board-ring: #cdd2da;
+    --board-silk: rgb(7 8 10 / 0.32);
     position: relative;
-    background: color-mix(in srgb, var(--tone) 9%, #fdf9f4);
+    background: color-mix(in srgb, var(--tone) 9%, #ffffff);
     border: 2px solid var(--board-line);
     border-radius: 6px;
-    box-shadow: 4px 4px 0 0 rgb(22 21 42 / 0.1);
+    box-shadow: 4px 4px 0 0 rgb(7 8 10 / 0.1);
     transition: border-color 0.5s ease, background-color 0.5s ease, box-shadow 0.2s ease, transform 0.15s ease;
   }
   .dark .board {
-    --board-neutral: #4a4664;
-    --board-neutral-hi: #5d5878;
+    --board-neutral: #434b57;
+    --board-neutral-hi: #5c6574;
     --board-line: var(--tone);
-    --board-ring: #565170;
+    --board-ring: #555e6c;
     --board-silk: rgb(255 255 255 / 0.26);
-    background: color-mix(in srgb, var(--tone) 8%, #232137);
+    background: color-mix(in srgb, var(--tone) 8%, #121418);
     box-shadow: 4px 4px 0 0 rgb(0 0 0 / 0.4);
   }
   [data-powered] .board {
@@ -958,7 +794,7 @@ g.is-on .circuit-via {
     background-position: left 3px top 3px, right 3px top 3px, left 3px bottom 3px, right 3px bottom 3px;
   }
 
-  /* gold edge-connector fingers sticking out of the bottom edge */
+  /* edge-connector fingers sticking out of the bottom edge */
   .board.has-pins {
     margin-bottom: 8px;
   }
@@ -973,16 +809,8 @@ g.is-on .circuit-via {
     transition: background 0.5s ease;
   }
   [data-powered] .board-pins {
-    background: repeating-linear-gradient(to right, #e9c46a 0 5px, #a07a1e 5px 6px, transparent 6px 10px);
-  }
-
-  /* interactive boards lift on hover */
-  .board-hover:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 0 rgb(var(--accent));
-  }
-  .dark .board-hover:hover {
-    box-shadow: 6px 6px 0 0 rgb(var(--accent) / 0.8);
+    /* nickel-plated pins: neutral silver, accent-tinted, fits the slate palette */
+    background: repeating-linear-gradient(to right, #c2c8d1 0 5px, #737d8c 5px 6px, transparent 6px 10px);
   }
 
   /* a title bar sitting flush at the top of a board */
@@ -1035,4 +863,1522 @@ g.is-on .circuit-via {
 [data-powered] .tl-via.is-current {
   background: rgb(var(--accent));
   box-shadow: inset 0 0 0 2px var(--pcb-copper), 0 0 0 3px rgb(var(--accent) / 0.25), 0 0 12px 2px rgb(var(--accent) / 0.45);
+}
+
+/* ======================================================================
+ * Toolkit parts grid (TechStackSection)
+ * ==================================================================== */
+.tk-bus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 10px;
+  font-family: VT323, monospace;
+  font-size: 1.1rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: theme('colors.ink.500');
+  border: 1px solid theme('colors.ink.200');
+  transition: color 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+.dark .tk-bus {
+  color: theme('colors.ink.400');
+  border-color: theme('colors.ink.700');
+}
+.tk-bus:hover,
+.tk-bus.is-on {
+  color: theme('colors.ink.900');
+  border-color: theme('colors.ink.900');
+}
+.dark .tk-bus:hover,
+.dark .tk-bus.is-on {
+  color: theme('colors.ink.50');
+  border-color: theme('colors.ink.300');
+}
+
+/* traces between parts of the active group */
+.tk-wire-bare,
+.tk-wire-lit {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: miter;
+}
+.tk-wire-bare { stroke: color-mix(in srgb, var(--trace-off) 45%, transparent); stroke-width: 1.5; }
+.tk-wire-lit {
+  stroke: var(--pcb-copper);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  filter: drop-shadow(0 0 3px var(--pcb-copper-glow));
+}
+.tk-wire-lit.is-on {
+  opacity: 1;
+  animation: tk-draw 0.55s ease forwards;
+}
+@keyframes tk-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* a part: monochrome icon on a pad, brand colour + name when its group is active */
+.tk-part {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  outline: none;
+  cursor: default;
+  transition: opacity 0.3s ease;
+}
+.tk-pad {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: rgb(var(--bg));
+  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+/* IC-style corner brackets around the pad */
+.tk-pad::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  --c: theme('colors.ink.300');
+  background:
+    linear-gradient(var(--c) 0 0) left top / 10px 2px,
+    linear-gradient(var(--c) 0 0) left top / 2px 10px,
+    linear-gradient(var(--c) 0 0) right top / 10px 2px,
+    linear-gradient(var(--c) 0 0) right top / 2px 10px,
+    linear-gradient(var(--c) 0 0) left bottom / 10px 2px,
+    linear-gradient(var(--c) 0 0) left bottom / 2px 10px,
+    linear-gradient(var(--c) 0 0) right bottom / 10px 2px,
+    linear-gradient(var(--c) 0 0) right bottom / 2px 10px;
+  background-repeat: no-repeat;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+.dark .tk-pad::before { --c: theme('colors.ink.600'); }
+.tk-pad > * {
+  filter: grayscale(1) contrast(0.9) brightness(1.05);
+  opacity: 0.55;
+  transition: filter 0.35s ease, opacity 0.35s ease, transform 0.2s ease;
+}
+.dark .tk-pad > * {
+  filter: grayscale(1) brightness(2.2) drop-shadow(0 0 6px rgb(95 196 181 / 0.35));
+  opacity: 0.7;
+}
+.tk-name {
+  font-family: VT323, monospace;
+  font-size: 1.05rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: theme('colors.ink.400');
+  white-space: nowrap;
+  opacity: 0.55;
+  transition: opacity 0.3s ease, color 0.3s ease;
+}
+.dark .tk-name { color: theme('colors.ink.500'); }
+
+[data-powered] .tk-part.is-on .tk-pad {
+  background: theme('colors.ink.50');
+  box-shadow: 0 0 0 1px var(--pcb-copper), 0 0 18px 2px var(--pcb-copper-glow);
+}
+[data-powered] .tk-part.is-on .tk-pad::before {
+  --c: var(--pcb-copper);
+  opacity: 1;
+}
+[data-powered] .tk-part.is-on .tk-pad > * {
+  filter: none;
+  opacity: 1;
+}
+[data-powered] .tk-part.is-on .tk-name {
+  opacity: 1;
+  color: theme('colors.ink.800');
+}
+.dark [data-powered] .tk-part.is-on .tk-name { color: theme('colors.ink.100'); }
+.tk-part.is-focus .tk-pad {
+  transform: translateY(-3px);
+}
+.tk-part.is-focus .tk-name { opacity: 1; }
+.tk-part.is-dim { opacity: 0.55; }
+@media (prefers-reduced-motion: reduce) {
+  .tk-wire-lit.is-on { animation: none; stroke-dashoffset: 0; }
+}
+
+/* Light mode: the toolkit board was a near-white field with pale ghost icons.
+   Give it a deeper paper/solder-mask tone and let resting parts read clearly. */
+:root:not(.dark) .tk-board {
+  background: color-mix(in srgb, var(--tone) 14%, #e7e9ed);
+}
+:root:not(.dark) .tk-pad {
+  background: #e2e5ea;
+  box-shadow: inset 0 0 0 1px rgb(7 8 10 / 0.08);
+}
+:root:not(.dark) .tk-pad::before {
+  --c: theme('colors.ink.400');
+}
+:root:not(.dark) .tk-pad > * {
+  filter: grayscale(1) contrast(1.1) brightness(0.85);
+  opacity: 0.75;
+}
+:root:not(.dark) .tk-name {
+  color: theme('colors.ink.500');
+  opacity: 0.85;
+}
+:root:not(.dark) .tk-part.is-dim { opacity: 0.7; }
+:root:not(.dark) [data-powered] .tk-part.is-on .tk-pad {
+  background: #ffffff;
+}
+
+/* Active BUS tab lights up like a powered part: accent fill, lit LED, soft glow */
+.tk-bus.is-on,
+.dark .tk-bus.is-on {
+  color: theme('colors.ink.950');
+  background: color-mix(in srgb, rgb(var(--accent)) 35%, transparent);
+  border-color: rgb(var(--accent));
+}
+[data-powered] .tk-bus.is-on,
+.dark [data-powered] .tk-bus.is-on {
+  background: rgb(var(--accent));
+  border-color: theme('colors.ink.950');
+  box-shadow: 2px 2px 0 0 rgb(7 8 10 / 0.6), 0 0 14px 1px rgb(var(--accent) / 0.45);
+}
+.tk-bus { transition: color 0.25s ease, border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease; }
+.pm-label {
+  margin-bottom: 12px;
+  font-family: VT323, monospace;
+  font-size: 1.1rem;
+  line-height: 1;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(var(--accent));
+}
+
+/* ======================================================================
+ * Footer (ground plane board)
+ * ==================================================================== */
+.ft-link {
+  font-family: VT323, monospace;
+  font-size: 1.15rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: theme('colors.ink.500');
+  transition: color 0.15s ease;
+}
+.dark .ft-link { color: theme('colors.ink.400'); }
+.ft-link:hover { color: rgb(var(--accent)); }
+.ft-up {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tone colours live OUTSIDE @layer: Board builds `tone-${tone}` dynamically, so Tailwind
+   can't see the class names and would purge layered rules. Must follow the .board rule. */
+[data-powered] .tone-peach { --tone: #6b9bff; --tone-dk: #2448a8; }
+[data-powered] .tone-sea   { --tone: #5fc4b5; --tone-dk: #23786e; }
+
+/* ======================================================================
+ * Probe cursor (ProbeCursor.tsx). Native cursor hidden only when the probe is active.
+ * ==================================================================== */
+html.probe-cursor,
+html.probe-cursor * {
+  cursor: none !important;
+}
+.probe-dot,
+.probe-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10001;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  will-change: transform;
+}
+html.probe-on .probe-dot,
+html.probe-on .probe-ring {
+  opacity: 1;
+}
+.probe-dot::before {
+  content: '';
+  position: absolute;
+  left: -2.5px;
+  top: -2.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  transition: width 0.15s ease, height 0.15s ease, left 0.15s ease, top 0.15s ease, border-radius 0.15s ease;
+}
+/* text fields: dot becomes a caret bar */
+.probe-dot.is-text::before {
+  left: -1px;
+  top: -9px;
+  width: 2px;
+  height: 18px;
+  border-radius: 0;
+}
+/* the original probe look: thin ring + soft glow */
+.probe-ring::before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgb(var(--accent) / 0.9);
+  box-shadow: 0 0 14px 4px rgb(var(--accent) / 0.22);
+  transition: transform 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+.probe-ring.is-hot::before {
+  transform: scale(1.5);
+  background: rgb(var(--accent) / 0.12);
+}
+.probe-ring.is-text::before {
+  opacity: 0;
+}
+.probe-ring.is-down::before {
+  transform: scale(0.75);
+}
+
+/* Hero photo grade: a cobalt-slate wash (hue via `color`, depth via `multiply`) */
+.hero-grade {
+  background:
+    linear-gradient(180deg, rgb(40 70 140 / 0.35), rgb(20 30 60 / 0.25)),
+    linear-gradient(0deg, rgb(10 11 13 / 0.15), rgb(10 11 13 / 0.15));
+  mix-blend-mode: color;
+  opacity: 0.55;
+}
+.hero-grade::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgb(14 22 44 / 0.22);
+  mix-blend-mode: multiply;
+}
+
+/* Floating dock (bottom-right): contact + achievements share one look.
+   Neutral frosted glass, hairline border, accent icon; contact expands into a
+   labelled pill on hover/focus. */
+.dock-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 12px;
+  font: 600 13px/1 'Space Grotesk', system-ui, sans-serif;
+  color: theme('colors.ink.700');
+  background: rgb(255 255 255 / 0.88);
+  border: 1px solid theme('colors.ink.200');
+  box-shadow: 0 6px 18px -8px rgb(7 8 10 / 0.25);
+  backdrop-filter: blur(10px);
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.dark .dock-btn {
+  color: theme('colors.ink.200');
+  background: rgb(18 20 24 / 0.82);
+  border-color: rgb(255 255 255 / 0.1);
+  box-shadow: 0 8px 22px -10px rgb(0 0 0 / 0.8);
+}
+.dock-btn:hover,
+.dock-btn:focus-visible {
+  outline: none;
+  color: theme('colors.ink.950');
+  border-color: rgb(var(--accent) / 0.6);
+  box-shadow: 0 8px 22px -8px rgb(var(--accent) / 0.45);
+}
+.dark .dock-btn:hover,
+.dark .dock-btn:focus-visible { color: #ffffff; }
+
+.float-cta {
+  position: fixed;
+  right: 12px;
+  bottom: 56px; /* above the achievements button */
+  z-index: 45;
+  padding: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease, color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.float-cta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  color: rgb(var(--accent));
+}
+.float-cta-label {
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  transition: max-width 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
+}
+.float-cta:hover .float-cta-label,
+.float-cta:focus-visible .float-cta-label {
+  max-width: 160px;
+  opacity: 1;
+  padding-left: 12px;
+}
+
+/* Line icons sit inline with labels */
+.pm-label,
+.ft-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pm-label { display: flex; }
+.exp-chip { gap: 0; }
+
+/* ======================================================================
+ * Projects bento (ProjectsSection + ProjectBentoCard)
+ * ==================================================================== */
+.bento-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .bento-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  /* hero card spans 2 columns × 2 rows; the rest flow into the right column */
+  .bento-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: minmax(0, auto); }
+}
+
+.bento {
+  --mx: 50%;
+  --my: 50%;
+  --rx: 0deg;
+  --ry: 0deg;
+  --line: rgb(11 11 13 / 0.1);
+  position: relative;
+  width: 100%;
+  border-radius: 16px;
+  padding: 1px; /* the spotlight border lives in this 1px ring */
+  cursor: pointer;
+  perspective: 1200px;
+  background:
+    radial-gradient(420px circle at var(--mx) var(--my), rgb(var(--accent) / 0.55), transparent 45%),
+    var(--line);
+  transform: perspective(1200px) rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+  will-change: transform;
+}
+.dark .bento { --line: rgb(255 255 255 / 0.08); }
+.bento:hover {
+  box-shadow: 0 30px 60px -30px rgb(var(--accent) / 0.45);
+}
+.bento-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+  background:
+    radial-gradient(600px circle at var(--mx) var(--my), rgb(var(--accent) / 0.07), transparent 40%),
+    #ffffff;
+}
+.dark .bento-inner {
+  background:
+    radial-gradient(600px circle at var(--mx) var(--my), rgb(var(--accent) / 0.1), transparent 40%),
+    #101215;
+}
+
+/* browser frame */
+.bento-browser {
+  margin: 14px 14px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #f4f5f7;
+  transform: translateZ(30px);
+}
+.dark .bento-browser { background: #0a0b0d; }
+.bento-chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 10px;
+  border-bottom: 1px solid var(--line);
+}
+.bento-dots { display: flex; gap: 5px; }
+.bento-dots > i { width: 8px; height: 8px; border-radius: 50%; background: #d6dae1; }
+.dark .bento-dots > i { background: #2b3039; }
+.group:hover .bento-dots > i:nth-child(1) { background: #ff5f57; }
+.group:hover .bento-dots > i:nth-child(2) { background: #febc2e; }
+.group:hover .bento-dots > i:nth-child(3) { background: #28c840; }
+.bento-url {
+  flex: 1;
+  min-width: 0;
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: 500 11px/18px 'Space Grotesk', system-ui, sans-serif;
+  color: theme('colors.ink.500');
+  background: rgb(11 11 13 / 0.04);
+  text-align: center;
+}
+.dark .bento-url { background: rgb(255 255 255 / 0.05); color: theme('colors.ink.400'); }
+.bento-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: 600 10px/1 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  color: theme('colors.ink.500');
+}
+.bento-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #febc2e; }
+.bento-status.is-live .bento-status-dot { background: #28c840; box-shadow: 0 0 0 3px rgb(40 200 64 / 0.18); }
+
+.bento-shot {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+.bento-hero .bento-shot { aspect-ratio: auto; flex: 1; min-height: 320px; }
+@media (min-width: 1024px) {
+  .bento-hero .bento-browser { flex: 1; display: flex; flex-direction: column; }
+  .bento-hero .bento-body { flex: 0 0 auto; }
+}
+.bento-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 0.5s ease, transform 6s ease;
+}
+.bento-img.is-on { opacity: 1; }
+.group:hover .bento-img.is-on { transform: scale(1.06); }
+.bento-pager {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  display: flex;
+  gap: 4px;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.group:hover .bento-pager { opacity: 1; }
+.bento-pager > i { width: 14px; height: 3px; border-radius: 2px; background: rgb(255 255 255 / 0.5); transition: background 0.2s ease, width 0.2s ease; }
+.bento-pager > i.is-on { width: 22px; background: #ffffff; }
+
+/* body */
+.bento-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 18px 20px 18px;
+  transform: translateZ(20px);
+}
+.bento-index {
+  position: absolute;
+  right: 16px;
+  top: 6px;
+  font: 700 56px/1 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(11 11 13 / 0.12);
+  pointer-events: none;
+  transition: -webkit-text-stroke-color 0.3s ease;
+}
+.dark .bento-index { -webkit-text-stroke-color: rgb(255 255 255 / 0.1); }
+.group:hover .bento-index { -webkit-text-stroke-color: rgb(var(--accent) / 0.6); }
+.bento-hero .bento-index { font-size: 84px; }
+.bento-title {
+  margin-bottom: 8px;
+  padding-right: 64px;
+  font: 600 20px/1.25 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  color: theme('colors.ink.950');
+}
+.dark .bento-title { color: theme('colors.ink.50'); }
+.bento-hero .bento-title { font-size: 28px; }
+.bento-tech {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #f4f5f7;
+  border: 1px solid var(--line);
+  transition: transform 0.2s ease;
+}
+.dark .bento-tech { background: rgb(255 255 255 / 0.06); }
+.bento-tech:hover { transform: translateY(-2px); }
+.bento-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font: 600 13px/1 'Space Grotesk', system-ui, sans-serif;
+  color: theme('colors.ink.600');
+  border: 1px solid var(--line);
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+.dark .bento-action { color: theme('colors.ink.300'); }
+.bento-action:hover { color: theme('colors.ink.950'); border-color: rgb(var(--accent) / 0.5); }
+.dark .bento-action:hover { color: #ffffff; }
+.bento-action-main { padding: 0 12px; }
+.group:hover .bento-action-main {
+  color: #ffffff;
+  background: rgb(var(--accent));
+  border-color: rgb(var(--accent));
+}
+.dark .group:hover .bento-action-main { color: #07080a; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bento { transform: none !important; }
+  .bento-img { transition: opacity 0.2s ease; transform: none !important; }
+}
+
+/* ======================================================================
+ * 3D coverflow (ProjectCoverflow.tsx)
+ * ==================================================================== */
+.cf {
+  position: relative;
+  outline: none;
+  overflow-x: clip; /* side cards must not widen the page */
+  overflow-y: visible;
+  margin: 0 -24px;
+  padding: 0 24px;
+  /* side cards fade out at the edges instead of being cut off */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%);
+}
+.cf-stage {
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  perspective: 1600px;
+  perspective-origin: 50% 40%;
+  /* flat (not preserve-3d): keeps hit-testing on the receding side cards */
+  padding: 12px 0 8px;
+  touch-action: pan-y;
+  user-select: none;
+}
+.cf-slide {
+  grid-area: 1 / 1;
+  width: min(820px, 88vw);
+  will-change: transform, opacity, filter;
+}
+.cf-slide:not(.is-active) { cursor: pointer; }
+.cf-slide:not(.is-active) .bento { pointer-events: none; }
+.cf-slide:not(.is-active) .bento-inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(var(--bg) / 0.25), transparent 60%);
+}
+.cf-floor {
+  height: 36px;
+  margin: -6px auto 0;
+  width: min(760px, 82vw);
+  background: radial-gradient(50% 100% at 50% 0%, rgb(var(--accent) / 0.28), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+.cf-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+.cf-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  color: theme('colors.ink.700');
+  border: 1px solid theme('colors.ink.200');
+  background: rgb(255 255 255 / 0.7);
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+}
+.dark .cf-arrow {
+  color: theme('colors.ink.200');
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.04);
+}
+.cf-arrow:hover:not(:disabled) { color: rgb(var(--accent)); border-color: rgb(var(--accent) / 0.6); }
+.cf-arrow:disabled { opacity: 0.35; }
+.cf-dots { display: flex; gap: 6px; }
+.cf-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: theme('colors.ink.300');
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+.dark .cf-dot { background: theme('colors.ink.700'); }
+.cf-dot.is-on { width: 26px; background: rgb(var(--accent)); }
+.cf-count {
+  min-width: 56px;
+  text-align: center;
+  font: 500 13px/1 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  color: theme('colors.ink.500');
+}
+@media (prefers-reduced-motion: reduce) {
+  .cf-slide { filter: none !important; }
+}
+
+/* Slider: images/links can't be dragged out; the drag is ours (swipe) */
+.cf-stage img,
+.cf-stage a {
+  -webkit-user-drag: none;
+  user-drag: none;
+}
+
+/* ======================================================================
+ * Project modal v2 (ProjectModal.tsx)
+ * ==================================================================== */
+.pm2 {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgb(11 11 13 / 0.1);
+  box-shadow: 0 40px 100px -30px rgb(7 8 10 / 0.6);
+}
+.dark .pm2 { background: #101215; border-color: rgb(255 255 255 / 0.08); }
+.pm2-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgb(11 11 13 / 0.08);
+  background: radial-gradient(600px 120px at 0% 0%, rgb(var(--accent) / 0.08), transparent 70%);
+}
+.dark .pm2-head { border-bottom-color: rgb(255 255 255 / 0.06); }
+.pm2-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font: 600 11px/1 'Space Grotesk', system-ui, sans-serif;
+  color: theme('colors.ink.600');
+  background: rgb(11 11 13 / 0.04);
+  border: 1px solid rgb(11 11 13 / 0.08);
+}
+.dark .pm2-pill { color: theme('colors.ink.300'); background: rgb(255 255 255 / 0.04); border-color: rgb(255 255 255 / 0.08); }
+.pm2-pill.is-accent { color: rgb(var(--accent)); border-color: rgb(var(--accent) / 0.35); background: rgb(var(--accent) / 0.08); }
+.pm2-dot { width: 6px; height: 6px; border-radius: 50%; background: #febc2e; }
+.pm2-pill.is-live .pm2-dot { background: #28c840; box-shadow: 0 0 0 3px rgb(40 200 64 / 0.2); }
+.pm2-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  color: theme('colors.ink.600');
+  border: 1px solid rgb(11 11 13 / 0.1);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.dark .pm2-close { color: theme('colors.ink.300'); border-color: rgb(255 255 255 / 0.1); }
+.pm2-close:hover { color: theme('colors.ink.950'); background: rgb(11 11 13 / 0.05); }
+.dark .pm2-close:hover { color: #ffffff; background: rgb(255 255 255 / 0.06); }
+.pm2-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgb(7 8 10 / 0.55);
+  border: 1px solid rgb(255 255 255 / 0.2);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.15s ease;
+}
+.group\/g:hover .pm2-nav { opacity: 1; }
+.pm2-nav:hover { background: rgb(var(--accent)); }
+.pm2-zoom {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: rgb(7 8 10 / 0.55);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.group\/g:hover .pm2-zoom { opacity: 1; }
+.pm2-thumb {
+  flex: 0 0 96px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  opacity: 0.55;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+.pm2-thumb:hover { opacity: 0.85; }
+.pm2-thumb.is-on { opacity: 1; border-color: rgb(var(--accent)); }
+.pm2-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font: 600 13px/1 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(var(--accent));
+}
+.pm2-num {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 22px;
+  margin-top: 1px;
+  border-radius: 6px;
+  font: 600 11px/1 'Space Grotesk', system-ui, sans-serif;
+  color: rgb(var(--accent));
+  background: rgb(var(--accent) / 0.1);
+}
+.pm2-box {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgb(11 11 13 / 0.08);
+  background: #f8f9fa;
+}
+.dark .pm2-box { border-color: rgb(255 255 255 / 0.06); background: rgb(255 255 255 / 0.02); }
+.pm2-box-title {
+  margin-bottom: 10px;
+  font: 600 11px/1 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: theme('colors.ink.400');
+}
+.pm2-fact { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; }
+.pm2-fact dt { color: theme('colors.ink.500'); }
+.pm2-fact dd { text-align: right; font-weight: 500; color: theme('colors.ink.900'); }
+.dark .pm2-fact dd { color: theme('colors.ink.100'); }
+.ct-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font: 600 12px/1 'Space Grotesk', system-ui, sans-serif;
+  color: theme('colors.ink.600');
+  border: 1px solid rgb(11 11 13 / 0.1);
+  background: rgb(11 11 13 / 0.03);
+}
+.dark .ct-pill { color: theme('colors.ink.300'); border-color: rgb(255 255 255 / 0.1); background: rgb(255 255 255 / 0.03); }
+.ct-pill-live { color: #1a8a3a; border-color: rgb(40 200 64 / 0.35); background: rgb(40 200 64 / 0.08); }
+.dark .ct-pill-live { color: #6fd08c; }
+@keyframes ct-ping { from { transform: scale(0.6); opacity: 0.9; } to { transform: scale(2); opacity: 0; } }
+.ct-ready-dot { width: 6px; height: 6px; border-radius: 50%; background: rgb(var(--accent)); }
+.ct-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.ct-row:hover { background: rgb(11 11 13 / 0.03); border-color: rgb(11 11 13 / 0.06); }
+.dark .ct-row:hover { background: rgb(255 255 255 / 0.03); border-color: rgb(255 255 255 / 0.06); }
+.ct-row-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  color: rgb(var(--accent));
+  background: rgb(var(--accent) / 0.1);
+}
+.ct-quote {
+  position: relative;
+  flex: 1;
+  padding: 24px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgb(var(--accent) / 0.25);
+  background:
+    radial-gradient(500px 200px at 100% 0%, rgb(var(--accent) / 0.12), transparent 60%),
+    radial-gradient(400px 200px at 0% 100%, rgb(95 196 181 / 0.1), transparent 60%),
+    rgb(255 255 255 / 0.85);
+}
+.dark .ct-quote {
+  background:
+    radial-gradient(500px 200px at 100% 0%, rgb(var(--accent) / 0.16), transparent 60%),
+    radial-gradient(400px 200px at 0% 100%, rgb(95 196 181 / 0.1), transparent 60%),
+    rgb(16 18 21 / 0.85);
+}
+.ct-quote-mark { color: rgb(var(--accent)); margin-bottom: 12px; opacity: 0.9; }
+.ct-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font: 700 16px/1 'Space Grotesk', system-ui, sans-serif;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgb(var(--accent)), #5fc4b5);
+}
+.dark .ct-avatar { color: #07080a; }
+.ct-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  font: 500 13px/1 'Space Grotesk', system-ui, sans-serif;
+  color: theme('colors.ink.700');
+}
+.dark .ct-label { color: theme('colors.ink.300'); }
+
+/* ======================================================================
+ * POWER GATE: "electrical" colour only after the signal arrives.
+ * 1) Inside an unpowered region every accent-derived colour falls back to
+ *    neutral grey (one place: the CSS variables).
+ * 2) Elements with fixed, non-accent colours (green/amber LEDs, brand logos,
+ *    window dots, teal icons) opt in with `.pw`: greyscale until powered.
+ * Content (text, screenshots) keeps its colour.
+ * ==================================================================== */
+[data-circuit]:not([data-powered]) {
+  --accent: 154 163 176;
+  --accent-light: 175 182 193;
+  --accent-dark: 115 125 140;
+  --power: #9aa3b0;
+  --power-hi: #c2c8d1;
+  --power-glow: transparent;
+  --pcb-copper: #9aa3b0;
+  --pcb-copper-glow: transparent;
+}
+.dark [data-circuit]:not([data-powered]) {
+  --accent: 85 94 108;
+  --accent-light: 115 125 140;
+  --accent-dark: 59 66 77;
+  --power: #3b424d;
+  --power-hi: #555e6c;
+  --pcb-copper: #3b424d;
+}
+.pw {
+  transition: filter 0.6s ease, opacity 0.6s ease;
+}
+[data-circuit]:not([data-powered]) .pw {
+  filter: grayscale(1);
+  opacity: 0.75;
+}
+
+/* ---------- Projects card as a circuit board ---------- */
+.bento {
+  --board-neutral: #c2c8d1;
+  --board-ring: #cdd2da;
+  --board-silk: rgb(11 11 13 / 0.28);
+  margin-bottom: 10px; /* room for the edge pins */
+}
+.dark .bento {
+  --board-neutral: #3b424d;
+  --board-ring: #3b424d;
+  --board-silk: rgb(255 255 255 / 0.22);
+}
+[data-powered] .bento { --board-ring: var(--pcb-copper); --board-silk: rgb(var(--accent) / 0.5); }
+.bento-silk {
+  position: absolute;
+  inset: 7px;
+  border: 1px dashed var(--board-silk);
+  border-radius: 10px;
+  pointer-events: none;
+  transition: border-color 0.5s ease;
+}
+.bento .board-holes {
+  --h: radial-gradient(circle, rgb(var(--bg)) 0 2.2px, var(--board-ring) 2.8px 4.6px, transparent 5.2px);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: var(--h), var(--h), var(--h), var(--h);
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
+  background-position: left 2px top 2px, right 2px top 2px, left 2px bottom 2px, right 2px bottom 2px;
+  transition: filter 0.5s ease;
+}
+.bento-code {
+  position: absolute;
+  right: 0;
+  bottom: 26px;
+  width: 7px;
+  display: flex;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: VT323, monospace;
+  font-size: 11px;
+  line-height: 7px;
+  letter-spacing: 0.14em;
+  color: var(--board-silk);
+  pointer-events: none;
+}
+.bento-pins {
+  position: absolute;
+  left: 24%;
+  right: 24%;
+  bottom: -9px;
+  height: 7px;
+  background: repeating-linear-gradient(to right, var(--board-neutral) 0 6px, transparent 6px 10px);
+  border-radius: 0 0 2px 2px;
+  transition: background 0.5s ease;
+}
+[data-powered] .bento-pins {
+  background: repeating-linear-gradient(to right, #c2c8d1 0 5px, #737d8c 5px 6px, transparent 6px 10px);
+}
+/* tech logos sit in IC-style pads (same as the Toolkit) */
+.bento-tech { position: relative; border-radius: 4px; }
+.bento-tech::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  --c: theme('colors.ink.300');
+  background:
+    linear-gradient(var(--c) 0 0) left top / 6px 1.5px, linear-gradient(var(--c) 0 0) left top / 1.5px 6px,
+    linear-gradient(var(--c) 0 0) right top / 6px 1.5px, linear-gradient(var(--c) 0 0) right top / 1.5px 6px,
+    linear-gradient(var(--c) 0 0) left bottom / 6px 1.5px, linear-gradient(var(--c) 0 0) left bottom / 1.5px 6px,
+    linear-gradient(var(--c) 0 0) right bottom / 6px 1.5px, linear-gradient(var(--c) 0 0) right bottom / 1.5px 6px;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+.dark .bento-tech::before { --c: theme('colors.ink.600'); }
+[data-powered] .bento-tech::before { --c: rgb(var(--accent) / 0.7); }
+/* no accent glow/spotlight before power */
+[data-circuit]:not([data-powered]) .bento:hover { box-shadow: none; }
+
+/* ---------- Coverflow controls: BUS-tab look + copper bus line ---------- */
+.cf-arrow { border-radius: 6px; }
+.cf-dot { border-radius: 2px; height: 6px; }
+.cf-dot.is-on { width: 22px; }
+.cf-count {
+  font: 400 18px/1 VT323, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.cf-floor {
+  position: relative;
+  height: 14px;
+  width: min(820px, 88vw);
+  margin: 6px auto 0;
+  filter: none;
+  background:
+    radial-gradient(circle, var(--power-hi) 0 2px, var(--power) 2.5px 4px, transparent 4.5px) left center / 9px 9px no-repeat,
+    radial-gradient(circle, var(--power-hi) 0 2px, var(--power) 2.5px 4px, transparent 4.5px) right center / 9px 9px no-repeat,
+    linear-gradient(var(--power), var(--power)) center / calc(100% - 18px) 2px no-repeat;
+  box-shadow: none;
+  transition: background 0.5s ease;
+}
+[data-powered] .cf-floor { filter: drop-shadow(0 0 4px var(--power-glow)); }
+
+/* ---------- Contact boards ---------- */
+.ct-pill {
+  height: 24px;
+  border-radius: 4px;
+  font: 400 15px/1 VT323, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ct-row-icon {
+  position: relative;
+  border-radius: 4px;
+  background: rgb(var(--accent) / 0.1);
+  transition: color 0.5s ease, background-color 0.5s ease;
+}
+.ct-row-icon::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  --c: rgb(var(--accent) / 0.6);
+  background:
+    linear-gradient(var(--c) 0 0) left top / 7px 1.5px, linear-gradient(var(--c) 0 0) left top / 1.5px 7px,
+    linear-gradient(var(--c) 0 0) right top / 7px 1.5px, linear-gradient(var(--c) 0 0) right top / 1.5px 7px,
+    linear-gradient(var(--c) 0 0) left bottom / 7px 1.5px, linear-gradient(var(--c) 0 0) left bottom / 1.5px 7px,
+    linear-gradient(var(--c) 0 0) right bottom / 7px 1.5px, linear-gradient(var(--c) 0 0) right bottom / 1.5px 7px;
+  background-repeat: no-repeat;
+}
+/* quote: now lives inside a neutral Board */
+.ct-quote {
+  height: 100%;
+  border: 0;
+  border-radius: 4px;
+  padding: 22px 24px 24px;
+}
+.ct-prompt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  font: 400 15px/1 VT323, monospace;
+  letter-spacing: 0.04em;
+  color: theme('colors.ink.400');
+}
+.ct-avatar {
+  border-radius: 6px;
+  font-family: Tiny5, monospace;
+  font-weight: 400;
+  transition: background 0.5s ease;
+}
+.ct-pin {
+  display: inline-flex;
+  margin-right: 8px;
+  padding: 2px 4px;
+  font: 400 13px/1 VT323, monospace;
+  color: rgb(var(--bg));
+  background: rgb(var(--accent));
+  transition: background-color 0.5s ease;
+}
+/* before power: the quote's colour wash and the avatar go neutral too */
+[data-circuit]:not([data-powered]) .ct-quote,
+.dark [data-circuit]:not([data-powered]) .ct-quote {
+  background: transparent;
+}
+[data-circuit]:not([data-powered]) .ct-avatar {
+  background: theme('colors.ink.400');
+}
+.dark [data-circuit]:not([data-powered]) .ct-avatar {
+  background: theme('colors.ink.700');
+}
+
+/* ---------- Project modal as a circuit board ---------- */
+.pm2 {
+  border-radius: 10px;
+  border: 2px solid rgb(var(--accent));
+  box-shadow: 6px 6px 0 0 rgb(var(--accent) / 0.25), 0 40px 100px -30px rgb(7 8 10 / 0.6);
+}
+.pm2-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  font: 400 15px/1 VT323, monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #07080a;
+  background: rgb(var(--accent));
+}
+.pm2-bar .frame-dots { margin-left: auto; }
+.pm2-head { border-bottom-style: dashed; }
+.pm2-pill { border-radius: 4px; font: 400 14px/1 VT323, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.pm2-h { font: 400 17px/1 VT323, monospace; letter-spacing: 0.12em; }
+.pm2-num { border-radius: 2px; font: 400 14px/1 VT323, monospace; color: #07080a; background: rgb(var(--accent)); }
+.pm2-box { position: relative; border-radius: 6px; border-style: dashed; }
+.pm2-box-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 400 16px/1 VT323, monospace;
+  letter-spacing: 0.12em;
+  color: rgb(var(--accent));
+}
+.pm2-fact dt { font: 400 15px/1.2 VT323, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+.pm2-thumb { border-radius: 4px; }
+.pm2 .bento-browser { border-radius: 6px; }
+.pm2-silk {
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed rgb(var(--accent) / 0.35);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.pm2-holes {
+  --h: radial-gradient(circle, rgb(var(--bg)) 0 2.2px, var(--pcb-copper) 2.8px 4.6px, transparent 5.2px);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--h), var(--h), var(--h), var(--h);
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
+  background-position: left 1px top 1px, right 1px top 1px, left 1px bottom 1px, right 1px bottom 1px;
+  z-index: 2;
+}
+.pm2-code {
+  position: absolute;
+  right: 0;
+  bottom: 30px;
+  width: 7px;
+  display: flex;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font: 400 11px/7px VT323, monospace;
+  letter-spacing: 0.14em;
+  color: rgb(var(--accent) / 0.55);
+  pointer-events: none;
+}
+
+/* ---------- Hero: hover brings back the photo's natural light ---------- */
+.hero-grade { transition: opacity 0.7s ease; }
+.hero-scrim-photo { transition: opacity 0.7s ease; }
+/* Hover: a soft "flashlight" around the cursor shows the photo's natural light;
+   the cool grade (and scanlines) stay everywhere else. */
+#home {
+  --hx: -999px;
+  --hy: -999px;
+  --hr: 0px;
+}
+.hero-grade,
+.hero-scrim-photo {
+  -webkit-mask-image: radial-gradient(circle var(--hr) at var(--hx) var(--hy), transparent 0, transparent 35%, #000 100%);
+  mask-image: radial-gradient(circle var(--hr) at var(--hx) var(--hy), transparent 0, transparent 35%, #000 100%);
+}
+
+/* ======================================================================
+ * ONE BUTTON STYLE for the whole site.
+ * Shape: 8px radius, 1px border, Space Grotesk 600, 36–40px tall.
+ * Two tones only: primary (accent fill) and secondary (neutral outline).
+ * Selected/active toggles use the primary tone.
+ * ==================================================================== */
+.btn-pixel,
+.icon-btn,
+.cf-arrow,
+.dock-btn,
+.bento-action,
+.pm2-close,
+.chip,
+.tk-bus,
+.copy-btn,
+.pm2-nav,
+.pm2-zoom {
+  border-radius: 8px !important;
+  font-family: 'Space Grotesk', system-ui, sans-serif !important;
+  font-weight: 600;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+/* secondary tone (everything that isn't the primary .btn-pixel) */
+.btn-pixel-outline,
+.btn-pixel-ghost,
+.icon-btn,
+.cf-arrow,
+.dock-btn,
+.bento-action,
+.pm2-close,
+.chip,
+.tk-bus,
+.copy-btn {
+  color: theme('colors.ink.700');
+  background: #ffffff;
+  border: 1px solid theme('colors.ink.200');
+  box-shadow: 0 1px 2px 0 rgb(7 8 10 / 0.05);
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.dark .btn-pixel-outline,
+.dark .icon-btn,
+.dark .cf-arrow,
+.dark .dock-btn,
+.dark .bento-action,
+.dark .pm2-close,
+.dark .chip,
+.dark .tk-bus,
+.dark .copy-btn {
+  color: theme('colors.ink.200');
+  background: rgb(255 255 255 / 0.04);
+  border-color: rgb(255 255 255 / 0.12);
+  box-shadow: none;
+}
+.btn-pixel-outline:hover,
+.icon-btn:hover,
+.cf-arrow:hover:not(:disabled),
+.dock-btn:hover,
+.bento-action:hover,
+.pm2-close:hover,
+.chip:hover,
+.tk-bus:hover,
+.copy-btn:hover {
+  color: theme('colors.ink.950');
+  background: theme('colors.ink.50');
+  border-color: rgb(var(--accent) / 0.55);
+  transform: none;
+}
+.dark .btn-pixel-outline:hover,
+.dark .icon-btn:hover,
+.dark .cf-arrow:hover:not(:disabled),
+.dark .dock-btn:hover,
+.dark .bento-action:hover,
+.dark .pm2-close:hover,
+.dark .chip:hover,
+.dark .tk-bus:hover,
+.dark .copy-btn:hover {
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(var(--accent) / 0.6);
+}
+/* on photos / dark panels the secondary tone is frosted glass */
+.btn-pixel-ghost,
+.dark .btn-pixel-ghost {
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.22);
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+}
+.btn-pixel-ghost:hover,
+.dark .btn-pixel-ghost:hover {
+  color: #ffffff;
+  background: rgb(255 255 255 / 0.16);
+  border-color: rgb(255 255 255 / 0.4);
+}
+/* selected / primary-state toggles use the primary tone */
+.chip.is-active,
+.dark .chip.is-active,
+.tk-bus.is-on,
+.dark .tk-bus.is-on,
+.group:hover .bento-action-main {
+  color: #ffffff;
+  background: rgb(var(--accent));
+  border-color: rgb(var(--accent));
+  box-shadow: none;
+}
+.dark .chip.is-active,
+.dark .tk-bus.is-on,
+.dark .group:hover .bento-action-main {
+  color: #07080a;
+}
+/* sizes: one scale */
+.chip, .tk-bus { height: 32px; padding: 0 12px; font-size: 13px; }
+.bento-action { height: 32px; font-size: 13px; }
+.cf-arrow, .pm2-close { width: 38px; height: 38px; }
+.icon-btn { height: 36px; font-size: 13px; }
+.copy-btn { width: 28px; height: 28px; }
+.dock-btn { height: 38px; font-size: 13px; }
+
+/* Hero: the dark reading panel is exactly as wide as the text column (36rem card,
+   aligned to the page container) and then fades out over ~14rem, so the quote card
+   always sits fully on the dark side and the photo starts right after it. */
+/* desktop scrim is the wavy SVG in HeroScrim.tsx */
+@media (min-width: 1024px) {
+  .hero-scrim { background: none !important; }
+}
+:root { --hero-ink: 7 8 10; }
+@property --hr {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+#home { transition: --hr 0.45s ease; }
+
+/* Buttons: square corners everywhere (pixel/PCB look); size & tones unchanged */
+.btn-pixel,
+.icon-btn,
+.cf-arrow,
+.dock-btn,
+.bento-action,
+.pm2-close,
+.chip,
+.tk-bus,
+.copy-btn,
+.pm2-nav,
+.pm2-zoom,
+.float-cta {
+  border-radius: 0 !important;
+}
+
+/* Hero quote uses the Get in Touch quote board;
+
+/* Hero intro without a card: just an accent rule on the left */
+.hero-intro {
+  padding: 2px 0 2px 18px;
+  border-left: 2px solid rgb(var(--accent));
+}
+.hero-intro-prompt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font: 400 15px/1 VT323, monospace;
+  letter-spacing: 0.04em;
+  color: rgb(255 255 255 / 0.5);
+}
+
+/* ======================================================================
+ * Buttons v3: IC-pad corners + hard pixel shadow (press = sink) + power LED
+ * on primary buttons. Applies to every button-like control.
+ * ==================================================================== */
+.btn-pixel,
+.icon-btn,
+.cf-arrow,
+.dock-btn,
+.bento-action,
+.pm2-close,
+.chip,
+.tk-bus,
+.float-cta {
+  --btn-shadow: rgb(7 8 10 / 0.28);
+  --corner: theme('colors.ink.300');
+  box-shadow: 2px 2px 0 0 var(--btn-shadow) !important;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease !important;
+}
+.dark .btn-pixel,
+.dark .icon-btn,
+.dark .cf-arrow,
+.dark .dock-btn,
+.dark .bento-action,
+.dark .pm2-close,
+.dark .chip,
+.dark .tk-bus,
+.dark .float-cta {
+  --btn-shadow: rgb(0 0 0 / 0.6);
+  --corner: theme('colors.ink.600');
+}
+.btn-pixel-ghost { --btn-shadow: rgb(0 0 0 / 0.35); --corner: rgb(255 255 255 / 0.45); }
+
+/* 1) IC-pad corner marks, slide out + turn accent on hover */
+.btn-pixel::before,
+.icon-btn::before,
+.cf-arrow::before,
+.dock-btn::before,
+.bento-action::before,
+.pm2-close::before,
+.chip::before,
+.tk-bus::before,
+.float-cta::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  pointer-events: none;
+  --c: var(--corner);
+  background:
+    linear-gradient(var(--c) 0 0) left top / 5px 1.5px, linear-gradient(var(--c) 0 0) left top / 1.5px 5px,
+    linear-gradient(var(--c) 0 0) right top / 5px 1.5px, linear-gradient(var(--c) 0 0) right top / 1.5px 5px,
+    linear-gradient(var(--c) 0 0) left bottom / 5px 1.5px, linear-gradient(var(--c) 0 0) left bottom / 1.5px 5px,
+    linear-gradient(var(--c) 0 0) right bottom / 5px 1.5px, linear-gradient(var(--c) 0 0) right bottom / 1.5px 5px;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: inset 0.15s ease, opacity 0.15s ease;
+}
+.btn-pixel:hover::before,
+.icon-btn:hover::before,
+.cf-arrow:hover:not(:disabled)::before,
+.dock-btn:hover::before,
+.bento-action:hover::before,
+.pm2-close:hover::before,
+.chip:hover::before,
+.tk-bus:hover::before,
+.float-cta:hover::before,
+.btn-pixel:focus-visible::before,
+.chip.is-active::before,
+.tk-bus.is-on::before {
+  inset: -6px;
+  opacity: 1;
+  --c: rgb(var(--accent));
+}
+
+/* 2) hard pixel shadow: hover lifts, press sinks */
+.btn-pixel:hover,
+.icon-btn:hover,
+.cf-arrow:hover:not(:disabled),
+.dock-btn:hover,
+.bento-action:hover,
+.pm2-close:hover,
+.chip:hover,
+.tk-bus:hover,
+.float-cta:hover {
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0 0 var(--btn-shadow) !important;
+}
+.btn-pixel:active,
+.icon-btn:active,
+.cf-arrow:active:not(:disabled),
+.dock-btn:active,
+.bento-action:active,
+.pm2-close:active,
+.chip:active,
+.tk-bus:active,
+.float-cta:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 0 0 0 0 var(--btn-shadow) !important;
+}
+/* primary buttons: accent-tinted shadow */
+.btn-pixel:not(.btn-pixel-outline):not(.btn-pixel-ghost) {
+  --btn-shadow: rgb(var(--accent-dark));
+}
+
+/* keep positioning: in-flow buttons are relative, the floating CTA stays fixed */
+.btn-pixel, .icon-btn, .cf-arrow, .bento-action, .chip, .tk-bus { position: relative; }
+.float-cta { position: fixed !important; }
+
+/* 3) scanline sweep: a thin band of light crosses the button once on hover,
+      like a signal running through a trace (uses a background layer, so it never
+      conflicts with the corner/LED pseudo-elements) */
+.btn-pixel,
+.icon-btn,
+.cf-arrow,
+.dock-btn,
+.bento-action,
+.pm2-close,
+.chip,
+.tk-bus {
+  /* !important: other button rules use the `background` shorthand, which would reset these */
+  background-image: linear-gradient(100deg, transparent 0 40%, rgb(255 255 255 / 0.28) 50%, transparent 60% 100%) !important;
+  background-size: 250% 100% !important;
+  background-position: 150% 0;
+  background-repeat: no-repeat !important;
+}
+.btn-pixel:hover,
+.icon-btn:hover,
+.cf-arrow:hover:not(:disabled),
+.dock-btn:hover,
+.bento-action:hover,
+.pm2-close:hover,
+.chip:hover,
+.tk-bus:hover {
+  animation: btn-sweep 0.6s ease-out 1;
+}
+@keyframes btn-sweep {
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
+}
+/* arrow icons nudge forward on hover */
+.btn-pixel svg:last-child { transition: transform 0.15s ease; }
+.btn-pixel:hover svg:last-child { transform: translateX(2px); }
+@media (prefers-reduced-motion: reduce) {
+  .btn-pixel:hover, .icon-btn:hover, .cf-arrow:hover, .dock-btn:hover, .bento-action:hover,
+  .pm2-close:hover, .chip:hover, .tk-bus:hover { animation: none; }
 }

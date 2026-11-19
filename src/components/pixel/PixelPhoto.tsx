@@ -31,7 +31,7 @@ export default function PixelPhoto({
   alt,
   focalX = 0.5,
   targetX = 0.5,
-  backdrop = '#16152a',
+  backdrop = '#07080a',
   className = '',
 }: PixelPhotoProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -93,17 +93,42 @@ export default function PixelPhoto({
       b.fillStyle = backdrop
       b.fillRect(0, 0, base.width, base.height)
       b.imageSmoothingQuality = 'high'
-      b.drawImage(img, x * dpr, y * dpr, w * dpr, h * dpr)
       if (x > 0) {
-        // Stepped (8-bit) fade from the backdrop into the photo's left edge.
-        const bands = 12
-        const bandW = Math.min(18, w / 3 / bands)
-        b.fillStyle = backdrop
-        for (let i = 0; i < bands; i++) {
-          b.globalAlpha = 1 - (i + 1) / (bands + 1)
-          b.fillRect(Math.floor((x + i * bandW) * dpr), 0, Math.ceil(bandW * dpr), base.height)
+        // The photo doesn't reach the left edge: fill the gap with a blurred, cover-scaled
+        // copy of the same photo (so the tone matches instead of a flat dark band), then
+        // lay the sharp photo on top with a soft feathered left edge.
+        // Edge extension: stretch a thin strip from the photo's own left edge across
+        // the gap (then blur it). Every row continues with the exact colours the photo
+        // has at that height, so the fill matches the photo instead of looking like a
+        // different picture.
+        const strip = Math.max(2, Math.round(iw * 0.012)) // ~1% of the source width
+        const pad = 40
+        b.save()
+        b.filter = 'blur(22px)'
+        // extend well under the feathered part of the photo, so the blur's soft
+        // right edge is hidden beneath it (otherwise a dark seam shows)
+        const under = Math.min(420, w / 2.2)
+        b.drawImage(img, 0, 0, strip, ih, -pad * dpr, (y - pad) * dpr, (x + pad + under) * dpr, (h + pad * 2) * dpr)
+        b.restore()
+        const sharp = document.createElement('canvas')
+        sharp.width = base.width
+        sharp.height = base.height
+        const sc = sharp.getContext('2d')!
+        sc.imageSmoothingQuality = 'high'
+        sc.drawImage(img, x * dpr, y * dpr, w * dpr, h * dpr)
+        const feather = Math.min(360, w / 2.5) * dpr
+        const g = sc.createLinearGradient(x * dpr, 0, x * dpr + feather, 0)
+        // smoothstep-like ramp: no visible start/end line
+        for (let k = 0; k <= 8; k++) {
+          const t = k / 8
+          g.addColorStop(t, `rgba(0,0,0,${t * t * (3 - 2 * t)})`)
         }
-        b.globalAlpha = 1
+        sc.globalCompositeOperation = 'destination-in'
+        sc.fillStyle = g
+        sc.fillRect(0, 0, sharp.width, sharp.height)
+        b.drawImage(sharp, 0, 0)
+      } else {
+        b.drawImage(img, x * dpr, y * dpr, w * dpr, h * dpr)
       }
 
       // One averaged colour per trail cell.

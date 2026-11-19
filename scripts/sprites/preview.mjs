@@ -24,10 +24,10 @@ vm.runInNewContext(ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
 }).outputText, context)
 const { PALETTE, ACHIEVEMENT_ICONS, ...exports } = context.exports
-const badges = ['press_start', 'chiptune', 'night_owl', 'polyglot', 'world_map', 'curious', 'completionist', 'messenger']
+const badges = ['press_start', 'night_owl', 'polyglot', 'world_map', 'curious', 'completionist', 'messenger']
 assert.deepEqual(Object.keys(ACHIEVEMENT_ICONS).sort(), badges.sort(), 'Achievement ids')
 const sprites = [...Object.entries(exports), ...Object.entries(ACHIEVEMENT_ICONS)]
-const specs = { PIGEON: [24, 16, 2], SUN: [9, 9, 1], MOON: [9, 9, 1], CARTRIDGE: [32, 24, 1], TROPHY: [9, 9, 1], SOUND_ON: [9, 9, 1], SOUND_OFF: [9, 9, 1], CLOUD_A: [24, 10, 1], CLOUD_B: [24, 10, 1], BIRD: [7, 5, 2] }
+const specs = { PIGEON: [24, 16, 2], SUN: [9, 9, 1], MOON: [9, 9, 1], CARTRIDGE: [32, 24, 1], TROPHY: [9, 9, 1], CLOUD_A: [24, 10, 1], CLOUD_B: [24, 10, 1], BIRD: [7, 5, 2] }
 for (const [key, hex] of Object.entries(PALETTE)) {
   assert.equal(key.length, 1)
   assert.match(hex, /^#[\da-f]{6}$/i)

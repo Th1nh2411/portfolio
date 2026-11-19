@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { play } from '../../game/sound'
+import { Check, Copy } from 'lucide-react'
 
 /** Copy a value to the clipboard; shows a short pixel "COPIED!" tag. */
 export default function CopyButton({ value, label }: { value: string; label: string }) {
@@ -28,7 +28,6 @@ export default function CopyButton({ value, label }: { value: string; label: str
       ta.remove()
     }
     setDone(true)
-    play('blip')
   }
 
   return (
@@ -39,7 +38,7 @@ export default function CopyButton({ value, label }: { value: string; label: str
       title={`${t('actions.copy')} ${label}`}
       className="copy-btn relative inline-flex items-center justify-center shrink-0"
     >
-      <span aria-hidden className="copy-glyph" />
+      {done ? <Check size={13} strokeWidth={2.5} aria-hidden /> : <Copy size={13} aria-hidden />}
       <span
         role="status"
         className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 font-pixel-mono text-sm leading-none px-1.5 py-1 bg-ink-950 text-ink-50 whitespace-nowrap pointer-events-none transition-opacity ${

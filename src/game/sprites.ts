@@ -138,30 +138,6 @@ export const ACHIEVEMENT_ICONS: Record<string, SpriteDef> = {
       ],
     ],
   },
-  chiptune: {
-    w: 16,
-    h: 16,
-    frames: [
-      [
-        '....oooooooo....',
-        '..ooppppppppoo..',
-        '.opnnnnnnnnnPpo.',
-        '.oppppppppppPPo.',
-        'opnppppoopppPPPo',
-        'opppppogoppoPPPo',
-        'opppooggopopoPPo',
-        'oppoggggoppooPPo',
-        'oppoggggoppooPPo',
-        'opppooggopopoPPo',
-        'opppppogoppoPPPo',
-        'oppppppoopppPPPo',
-        '.oPPPPPPPPPPPPo.',
-        '.opPPPPPPPPPPro.',
-        '..ooPPPPPPPPoo..',
-        '....oooooooo....',
-      ],
-    ],
-  },
   night_owl: {
     w: 16,
     h: 16,
@@ -356,42 +332,6 @@ export const TROPHY: SpriteDef = {
       '...oEo...',
       '..oleEo..',
       '.ooooooo.',
-    ],
-  ],
-}
-
-export const SOUND_ON: SpriteDef = {
-  w: 9,
-  h: 9,
-  frames: [
-    [
-      '....o....',
-      '...ogo.m.',
-      '.ooggo..m',
-      'oggggo.m.',
-      'oggggo.m.',
-      'oggggo.m.',
-      '.ooggo..m',
-      '...ogo.m.',
-      '....o....',
-    ],
-  ],
-}
-
-export const SOUND_OFF: SpriteDef = {
-  w: 9,
-  h: 9,
-  frames: [
-    [
-      '....o....',
-      '...ogo...',
-      '.ooggo...',
-      'oggggor.r',
-      'oggggo.r.',
-      'oggggor.r',
-      '.ooggo...',
-      '...ogo...',
-      '....o....',
     ],
   ],
 }

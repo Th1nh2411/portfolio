@@ -34,7 +34,9 @@
     "view_details": "Xem Chi Tiết",
     "responsibilities": "Trách Nhiệm",
     "tech_stack": "Công Nghệ",
-    "back": "Quay Lại Dự Án"
+    "back": "Quay Lại Dự Án",
+    "intro": "Một số dự án tiêu biểu mình đã làm — từ công cụ nội bộ doanh nghiệp đến ứng dụng web cho người dùng cuối.",
+    "empty": "Không có dự án nào khớp bộ lọc này."
   },
   "contact": {
     "title": "Liên Hệ",
@@ -43,7 +45,7 @@
     "email": "Email của bạn",
     "subject": "Tiêu đề",
     "message": "Nội dung",
-    "send": "Gửi Tin Nhắn",
+    "send": "Gửi",
     "sending": "Đang gửi...",
     "success": "Đã gửi! Tôi sẽ phản hồi sớm.",
     "error": "Có lỗi xảy ra. Vui lòng thử lại."

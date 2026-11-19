@@ -34,7 +34,9 @@
     "view_details": "View Details",
     "responsibilities": "Responsibilities",
     "tech_stack": "Tech Stack",
-    "back": "Back to Projects"
+    "back": "Back to Projects",
+    "intro": "A selection of projects I've built — from internal business tools to consumer-facing web apps.",
+    "empty": "No projects match this filter."
   },
   "contact": {
     "title": "Get In Touch",
@@ -43,7 +45,7 @@
     "email": "Your Email",
     "subject": "Subject",
     "message": "Message",
-    "send": "Send Message",
+    "send": "Send",
     "sending": "Sending...",
     "success": "Message sent! I'll get back to you soon.",
     "error": "Something went wrong. Please try again."
@@ -61,6 +63,6 @@
   "actions": {
     "copy": "Copy",
     "copied": "COPIED!",
-    "download_cv": "Download CV"
+    "download_cv": "CV"
   }
 }

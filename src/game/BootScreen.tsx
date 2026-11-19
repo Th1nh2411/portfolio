@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Play } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { emit, unlock } from './store'
-import { play, setSoundOn } from './sound'
 
 const KEY = 'px.booted'
 const LINES = [
@@ -41,12 +41,7 @@ export default function BootScreen() {
     return () => window.clearTimeout(t)
   }, [open, shown])
 
-  const start = useCallback((withSound: boolean) => {
-    if (withSound) {
-      setSoundOn(true)
-      unlock('chiptune')
-    }
-    play('start')
+  const start = useCallback(() => {
     try {
       localStorage.setItem(KEY, '1')
     } catch {
@@ -63,9 +58,9 @@ export default function BootScreen() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
-        start(false)
+        start()
       }
-      if (e.key === 'Escape') start(false)
+      if (e.key === 'Escape') start()
     }
     window.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
@@ -89,10 +84,10 @@ export default function BootScreen() {
         >
           <div className="absolute inset-0 scanlines opacity-50 pointer-events-none" />
           <button
-            onClick={() => start(false)}
+            onClick={() => start()}
             className="absolute top-4 right-4 font-pixel-mono text-lg text-ink-400 hover:text-accent"
           >
-            SKIP ▶▶
+            SKIP
           </button>
 
           <div className="relative w-full max-w-xl px-6">
@@ -106,11 +101,8 @@ export default function BootScreen() {
                 PRESS START
               </p>
               <div className="flex flex-wrap justify-center gap-5">
-                <button autoFocus={ready} onClick={() => start(false)} className="btn-pixel">
-                  ▶ START
-                </button>
-                <button onClick={() => start(true)} className="btn-pixel btn-pixel-ghost">
-                  ♪ START + SOUND
+                <button autoFocus={ready} onClick={start} className="btn-pixel">
+                  <Play size={14} fill="currentColor" aria-hidden /> START
                 </button>
               </div>
               <p className="font-pixel-mono text-lg text-ink-500 mt-6">[ENTER] TO START</p>

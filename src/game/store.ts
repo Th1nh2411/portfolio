@@ -1,5 +1,4 @@
 import { useSyncExternalStore } from 'react'
-import { play } from './sound'
 
 /** Player progress, persisted per browser. */
 export interface GameState {
@@ -16,7 +15,6 @@ export interface Achievement {
 
 export const ACHIEVEMENTS: Achievement[] = [
   { id: 'press_start', icon: '🎮', title: { en: 'Press Start', vi: 'Bắt Đầu' }, desc: { en: 'Booted up the site', vi: 'Khởi động trang' } },
-  { id: 'chiptune', icon: '🔊', title: { en: 'Chiptune', vi: 'Nhạc 8-bit' }, desc: { en: 'Turned the sound on', vi: 'Bật âm thanh' } },
   { id: 'night_owl', icon: '🌙', title: { en: 'Night Owl', vi: 'Cú Đêm' }, desc: { en: 'Switched the theme', vi: 'Đổi giao diện sáng/tối' } },
   { id: 'polyglot', icon: '🗣️', title: { en: 'Polyglot', vi: 'Song Ngữ' }, desc: { en: 'Changed the language', vi: 'Đổi ngôn ngữ' } },
   { id: 'lever', icon: '🕹️', title: { en: 'Flip the Switch', vi: 'Gạt Cần' }, desc: { en: 'Pulled the power lever', vi: 'Gạt cần nguồn điện' } },
@@ -86,7 +84,6 @@ export function unlock(id: string) {
   const a = ACHIEVEMENTS.find((x) => x.id === id)
   if (!a) return
   commit({ ...state, achievements: [...state.achievements, id] })
-  play('unlock')
   unlockListeners.forEach((cb) => cb(a))
 }
 
