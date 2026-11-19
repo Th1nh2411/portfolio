@@ -260,6 +260,8 @@
   }
   .dark .chip.is-active {
     @apply text-ink-950 border-ink-950;
+    /* `.dark .chip` sets a dark fill with the same specificity; restore the accent */
+    background: rgb(var(--accent));
     box-shadow: 2px 2px 0 0 rgb(0 0 0 / 0.55);
   }
 
