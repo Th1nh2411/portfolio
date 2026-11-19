@@ -1,6 +1,17 @@
 import { memo } from 'react'
 import {
   siAngular,
+  siBlender,
+  siClaude,
+  siCloudflare,
+  siGodotengine,
+  siGooglegemini,
+  siJavascript,
+  siModelcontextprotocol,
+  siPython,
+  siRedis,
+  siTelegram,
+  siVercel,
   siApache,
   siDocker,
   siExpress,
@@ -55,6 +66,20 @@ const ICONS: Record<string, { icon: SimpleIcon; color?: string }> = {
   figma: { icon: siFigma },
   jira: { icon: siJira },
   socketio: { icon: siSocketdotio },
+  websocket: { icon: siSocketdotio, color: '#8a8f98' },
+  godot: { icon: siGodotengine },
+  gdscript: { icon: siGodotengine },
+  blender: { icon: siBlender },
+  python: { icon: siPython },
+  javascript: { icon: siJavascript },
+  redis: { icon: siRedis },
+  gemini: { icon: siGooglegemini },
+  vercel: { icon: siVercel, color: '#8a8f98' },
+  cloudflare: { icon: siCloudflare },
+  telegram: { icon: siTelegram },
+  claudeapi: { icon: siClaude },
+  claude: { icon: siClaude },
+  mcp: { icon: siModelcontextprotocol, color: '#8a8f98' },
 }
 
 /** Techs with no logo get a short text badge. */
@@ -62,6 +87,8 @@ const LABELS: Record<string, string> = {
   restapi: 'API',
   cms: 'CMS',
   virtualaccountapi: 'VA',
+  shaders: 'GLSL',
+  canvas: 'CNV',
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')

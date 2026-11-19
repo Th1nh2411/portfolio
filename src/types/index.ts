@@ -12,6 +12,8 @@ export interface Project {
   githubUrl?: string
   period: string
   featured?: boolean
+  /** display order in the slider (ascending); unset goes last */
+  order?: number
   details?: string
   detailsVi?: string
   responsibilities?: string[]

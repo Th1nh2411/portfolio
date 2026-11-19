@@ -68,7 +68,7 @@ export function getProjects(): Promise<Project[]> {
         const { db, mod } = await firestore();
         const snap = await mod.getDocs(mod.query(mod.collection(db, "projects"), mod.orderBy("period", "desc")));
         if (snap.empty) return projectsData;
-        return snap.docs.map((d) => withViFallback({ id: d.id, ...d.data() } as Project));
+        return sortProjects(snap.docs.map((d) => withViFallback({ id: d.id, ...d.data() } as Project)));
     }, projectsData);
 }
 
@@ -86,6 +86,14 @@ export function getSkills(): Promise<Skill[]> {
         const snap = await mod.getDocs(mod.collection(db, "skills"));
         return snap.empty ? skillsData : snap.docs.map((d) => d.data() as Skill);
     }, skillsData);
+}
+
+/** Slider order: explicit `order` first (ascending), then the rest as Firestore returned them. */
+function sortProjects(list: Project[]): Project[] {
+    return list
+        .map((p, i) => ({ p, k: p.order ?? 1000 + i }))
+        .sort((a, b) => a.k - b.k)
+        .map((x) => x.p);
 }
 
 /** Firestore docs may lack Vietnamese fields: borrow them from the bundled data. */
