@@ -3,7 +3,7 @@
 // Make sure to set your Firebase credentials in .env first
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, setDoc, writeBatch } from "firebase/firestore";
+import { getFirestore, doc, setDoc, writeBatch, collection, getDocs, deleteDoc } from "firebase/firestore";
 import { config } from "dotenv";
 config();
 
@@ -237,6 +237,14 @@ const projects = [
 for (const project of projects) {
     const { id, ...data } = project;
     await setDoc(doc(db, "projects", id), data);
+}
+// remove projects that are no longer in the list above
+const keep = new Set(projects.map((p) => p.id));
+for (const d of (await getDocs(collection(db, "projects"))).docs) {
+    if (!keep.has(d.id)) {
+        await deleteDoc(d.ref);
+        console.log(`  - removed stale project "${d.id}"`);
+    }
 }
 console.log("✓ Projects seeded");
 
